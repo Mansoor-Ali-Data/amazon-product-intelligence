@@ -143,6 +143,15 @@ def preprocess_reviews(df: pd.DataFrame) -> pd.DataFrame:
         inplace=True,
         errors="ignore",
     )
+    # ---------------------------------------------------------------------
+    # Standardize column names
+    # ---------------------------------------------------------------------
+
+    df = df.rename(
+    columns={
+        "productASIN": "asin",
+    }
+    )
 
     # ------------------------------------------------------------------
     # Remove media columns.
