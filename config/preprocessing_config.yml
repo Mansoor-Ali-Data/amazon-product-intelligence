@@ -1,0 +1,12 @@
+# Configuration for data preprocessing pipelines
+datasets:
+  
+  # Product dataset file paths
+  products:
+    input: "data/raw/products.csv"       # Raw product data source
+    output: "data/processed/products.csv" # Cleaned product data destination
+
+  # Customer reviews dataset file paths
+  reviews:
+    input: "data/raw/reviews.csv"         # Raw reviews data source
+    output: "data/processed/reviews.csv"  # Cleaned reviews data destination
