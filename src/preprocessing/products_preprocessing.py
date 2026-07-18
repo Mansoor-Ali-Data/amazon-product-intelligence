@@ -211,6 +211,22 @@ def preprocess_products(df: pd.DataFrame) -> pd.DataFrame:
     if "rating_stars" in df.columns:
         df["rating_stars"] = extract_rating_stars(df["rating_stars"])
     
+    # ---------------------------------------------------------------------
+    # Clean list price
+    # ---------------------------------------------------------------------
+
+    df["list_price"] = (
+    df["list_price"]
+    .fillna("Not specified")
+    .str.replace("List Price:", "", regex=False)
+    .str.strip()
+    )
+    
+    # ---------------------------------------------------------------------
+    # Handle missing values
+    # ---------------------------------------------------------------------
+    df["manufacturer"] = df["manufacturer"].fillna("Not specified")
+    
     logger.info("Products preprocessing completed.")
 
     return df

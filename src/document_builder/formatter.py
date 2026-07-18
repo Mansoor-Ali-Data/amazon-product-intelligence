@@ -34,9 +34,21 @@ def format_review(review: Review, review_number: int) -> str:
         reviewTitle=review.reviewTitle,
         reviewID=review.reviewID,
         rating=review.rating,
-        verifiedPurchase=review.verifiedPurchase,
-        review_size=review.review_size,
-        review_color=review.review_color,
+        verifiedPurchase=(
+            "Yes"
+            if review.verifiedPurchase
+            else "No"
+        ),
+        review_size=(
+            review.review_size
+            if review.review_size and str(review.review_size).lower() != "nan"
+            else "Not specified"
+        ),
+        review_color=(
+            review.review_color
+                if review.review_color and str(review.review_color).lower() != "nan"
+                else "Not specified"
+        ),
         reviewText=review.reviewText,
     )
 
@@ -78,7 +90,11 @@ def format_document(product: Product, reviews: list[Review]) -> str:
         brand_name=product.brand_name,
         seller_name=product.seller_name,
         breadcrumbs=product.breadcrumbs,
-        price_value=product.price_value,
+        price_value=(
+            f"${product.price_value:.2f}"
+                if product.price_value is not None
+                else "Not specified"
+            ),
         list_price=product.list_price,
         rating_stars=product.rating_stars,
         rating_count=product.rating_count,

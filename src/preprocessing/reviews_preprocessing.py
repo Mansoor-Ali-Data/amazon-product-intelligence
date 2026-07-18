@@ -87,7 +87,7 @@ def parse_product_variant(
     (review_size, review_color)
     """
     if pd.isna(value):
-        return None, None
+        return "Not specified", "Not specified"
 
     value = str(value)
 
@@ -143,6 +143,7 @@ def preprocess_reviews(df: pd.DataFrame) -> pd.DataFrame:
         inplace=True,
         errors="ignore",
     )
+    
     # ---------------------------------------------------------------------
     # Standardize column names
     # ---------------------------------------------------------------------
