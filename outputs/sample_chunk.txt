@@ -1,0 +1,38 @@
+====================================================================================================
+CHUNK METADATA
+====================================================================================================
+{'asin': 'B0B59BJG6Y', 'brand_name': 'MLYENX Store', 'breadcrumbs': 'Clothing, Shoes & Jewelry › Men › Clothing › Active › Active Shirts & Tees › Polos', 'price_value': 39.9926, 'rating_stars': 4.6, 'chunk_index': 0, 'chunk_id': 'B0B59BJG6Y_chunk_000'}
+
+====================================================================================================
+CHUNK TEXT
+====================================================================================================
+
+================================================================================
+PRODUCT INFORMATION
+================================================================================
+
+Title: 4/5 Pack Mens Polo Shirts Short Sleeve Quick Dry Moisture Wicking Casual Golf T Shirts for Men
+
+Brand: MLYENX Store
+
+Seller: Greenfive
+
+Category: Clothing, Shoes & Jewelry › Men › Clothing › Active › Active Shirts & Tees › Polos
+
+Price: $39.99
+
+List Price: $53.99
+
+Rating: 4.6 / 5
+
+Rating Count: 1654.0
+
+Best Seller Rank: #56,836 in Clothing, Shoes & Jewelry (See Top 100 in Clothing, Shoes & Jewelry)    #85 in Men's Activewear Polos
+
+Recent Purchases: 50+ bought
+
+Size: Large
+
+Color: 5 Pack Black, Dark Grey, Light Blue, Milddle Blue, Light Grey
+
+Manufacturer: Not specified
