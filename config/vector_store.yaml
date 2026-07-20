@@ -1,0 +1,9 @@
+# =============================================================================
+# Vector Store Configuration
+# =============================================================================
+
+vector_store:
+  persist_directory: data/chroma
+  collection_name: amazon_products
+  distance_metric: cosine
+  allow_reset: true
