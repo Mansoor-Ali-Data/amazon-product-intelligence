@@ -41,26 +41,116 @@ class VectorStore:
     # Public API
     # ------------------------------------------------------------------
 
-    def add_documents(self) -> None:
-        """Add embedded documents to the collection."""
-        raise NotImplementedError
+    def add_documents(
+        self,
+        ids: list[str],
+        documents: list[str],
+        embeddings: list[list[float]],
+        metadatas: list[dict[str, Any]],
+    ) -> None:
+        """
+        Add documents and their embeddings to the ChromaDB collection.
 
-    def search(self):
-        """Search the collection using a query embedding."""
-        raise NotImplementedError
+        Args:
+            ids: Unique IDs for each document.
+            documents: Text content of the documents.
+            embeddings: Embedding vectors corresponding to each document.
+            metadatas: Metadata dictionaries associated with each document.
+
+        Raises:
+            ValueError: If the input lists have different lengths.
+        """
+        if not (
+            len(ids)
+            == len(documents)
+            == len(embeddings)
+            == len(metadatas)
+        ):
+            raise ValueError(
+            "ids, documents, embeddings, and metadatas must have the same length."
+        )
+
+        self._collection.add(
+            ids=ids,
+            documents=documents,
+            embeddings=embeddings,
+            metadatas=metadatas,
+        )
+
+    def search(
+        self,
+        query_embedding: list[float],
+        top_k: int = 5,
+    ) -> dict[str, Any]:
+        """
+        Perform semantic search using a query embedding.
+
+        Args:
+            query_embedding: Embedding vector of the query.
+            top_k: Maximum number of results.
+
+        Returns:
+            Search results returned by ChromaDB.
+    """
+        return self._collection.query(
+        query_embeddings=[query_embedding],
+        n_results=top_k,
+    )
 
     def count(self) -> int:
-        """Return the number of indexed vectors."""
-        raise NotImplementedError
+        """
+        Return the total number of documents in the collection.
 
-    def peek(self, limit: int = 5):
-        """Return a sample of indexed documents."""
-        raise NotImplementedError
+        Returns:
+            Number of stored documents.
+        """
+        return self._collection.count()
+
+    def peek(self, limit: int = 5) -> dict[str, Any]:
+        """
+        Retrieve a small sample of stored documents.
+
+        Args:
+            limit: Maximum number of documents to return.
+
+        Returns:
+            Dictionary containing stored records.
+        """
+        return self._collection.peek(limit=limit)
+
+    def peek(self, limit: int = 5) -> dict[str, Any]:
+        """
+        Retrieve a small sample of stored documents.
+
+        Args:
+            limit: Maximum number of documents to return.
+
+        Returns:
+            Dictionary containing stored records.
+        """
+        return self._collection.peek(limit=limit)
 
     def reset(self) -> None:
-        """Reset the vector store."""
-        raise NotImplementedError
+        """
+        Delete and recreate the collection.
 
+        Raises:
+            RuntimeError: If reset is disabled.
+        """
+        if not self._config["allow_reset"]:
+            raise RuntimeError("Vector store reset is disabled.")
+
+        collection_name = self._config["collection_name"]
+
+        self._client.delete_collection(collection_name)
+
+        self._collection = self._client.get_or_create_collection(
+            name=collection_name,
+            metadata={
+            "hnsw:space": self._config["distance_metric"]
+        },
+    ) 
+    
     # ------------------------------------------------------------------
     # Private Helpers
     # ------------------------------------------------------------------
