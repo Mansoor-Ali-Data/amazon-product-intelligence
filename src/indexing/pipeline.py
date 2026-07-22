@@ -40,4 +40,13 @@ def run_indexing_pipeline() -> None:
         len(documents),
     )
 
+    chunks = build_chunks(
+        documents=documents,
+    )
+
+    logger.info(
+        "Generated %d chunks.",
+        len(chunks),
+    )
+
     # Remaining pipeline stages will be integrated incrementally.
