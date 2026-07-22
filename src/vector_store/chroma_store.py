@@ -82,14 +82,9 @@ class VectorStore:
         logger.info(
             "Added %d vectors to collection '%s'.",
             len(ids),
-            self.collection.name,
+            self._collection.name,
         )
 
-    def count(self) -> int:
-        """
-        Return the number of vectors stored in the collection.
-        """
-        return self.collection.count()
 
     def search(
         self,
@@ -120,17 +115,6 @@ class VectorStore:
         """
         return self._collection.count()
 
-    def peek(self, limit: int = 5) -> dict[str, Any]:
-        """
-        Retrieve a small sample of stored documents.
-
-        Args:
-            limit: Maximum number of documents to return.
-
-        Returns:
-            Dictionary containing stored records.
-        """
-        return self._collection.peek(limit=limit)
 
     def peek(self, limit: int = 5) -> dict[str, Any]:
         """
