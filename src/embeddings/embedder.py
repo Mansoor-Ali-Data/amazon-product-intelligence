@@ -31,3 +31,16 @@ def embed_texts(
     )
 
     return embeddings
+
+def embed_query(
+    query: str,
+) -> list[float]:
+    """
+    Generate an embedding for a single query.
+
+    Args:
+        query: User query to embed.
+
+    Returns:
+        Query embedding vector.
+    """
