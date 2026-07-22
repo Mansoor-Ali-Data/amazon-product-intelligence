@@ -1,0 +1,3 @@
+data:
+  processed_products: data/processed/products.csv
+  processed_reviews: data/processed/reviews.csv
