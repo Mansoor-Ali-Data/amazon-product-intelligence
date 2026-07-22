@@ -20,7 +20,8 @@ from chromadb.api import ClientAPI
 from chromadb.api.models.Collection import Collection
 
 from config.loader import load_yaml
-
+from config.logging import get_logger
+logger = get_logger(__name__)
 
 class VectorStore:
     """
@@ -75,7 +76,20 @@ class VectorStore:
             documents=documents,
             embeddings=embeddings,
             metadatas=metadatas,
+            
         )
+
+        logger.info(
+            "Added %d vectors to collection '%s'.",
+            len(ids),
+            self.collection.name,
+        )
+
+    def count(self) -> int:
+        """
+        Return the number of vectors stored in the collection.
+        """
+        return self.collection.count()
 
     def search(
         self,
