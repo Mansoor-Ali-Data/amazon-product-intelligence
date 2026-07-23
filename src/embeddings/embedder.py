@@ -30,6 +30,11 @@ def embed_texts(
         normalize_embeddings=True,
     )
 
+    embeddings = [
+        embedding.tolist()
+        for embedding in embeddings
+    ]
+    
     return embeddings
 
 def embed_query(
@@ -44,3 +49,4 @@ def embed_query(
     Returns:
         Query embedding vector.
     """
+    return embed_texts([query])[0]
