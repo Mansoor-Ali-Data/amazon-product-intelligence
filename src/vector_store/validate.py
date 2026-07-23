@@ -2,12 +2,14 @@ from src.embeddings.models import EmbeddedChunk
 from src.vector_store.builder import VectorStoreBuilder
 from src.vector_store.chroma_store import VectorStore
 
+from config.loader import load_yaml
+from src.embeddings.embedder import embed_texts
 
 def main() -> None:
+    text="This is a sample chunk.",
     embedded_chunk = EmbeddedChunk(
         id="chunk_001",
-        text="This is a sample chunk.",
-        embedding=[0.1, 0.2, 0.3],
+        embedding = embed_texts([text])[0],
         metadata={
             "asin": "B001",
             "chunk_index": 0,
@@ -18,7 +20,13 @@ def main() -> None:
         embedded_chunks=[embedded_chunk],
     )
 
-    vector_store = VectorStore()
+    config = load_yaml("vector_store.yaml")
+
+    vector_store = VectorStore(
+        collection_name=config["vector_store"][
+            "validation_collection_name"
+        ],
+    )
 
     vector_store.add_documents(
         ids=batch.ids,

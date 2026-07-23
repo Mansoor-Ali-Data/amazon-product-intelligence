@@ -23,6 +23,8 @@ from config.loader import load_yaml
 from config.logging import get_logger
 logger = get_logger(__name__)
 
+from .models import SearchResult
+
 class VectorStore:
     """
     ChromaDB-backed vector store.
@@ -31,10 +33,17 @@ class VectorStore:
     a clean interface for storing and retrieving vector embeddings.
     """
 
-    def __init__(self) -> None:
+    def __init__(
+        self,
+        collection_name: str | None = None,
+    ) -> None:
         """Initialize the vector store."""
 
         self._config: dict[str, Any] = self._load_config()
+        self._collection_name = (
+            collection_name
+            or self._config["collection_name"]
+        )
         self._client: ClientAPI = self._create_client()
         self._collection: Collection = self._create_collection()
 
@@ -90,7 +99,7 @@ class VectorStore:
         self,
         query_embedding: list[float],
         top_k: int = 5,
-    ) -> dict[str, Any]:
+    ) -> SearchResult:
         """
         Perform semantic search using a query embedding.
 
@@ -101,10 +110,16 @@ class VectorStore:
         Returns:
             Search results returned by ChromaDB.
     """
-        return self._collection.query(
+        results = self._collection.query(
         query_embeddings=[query_embedding],
         n_results=top_k,
     )
+        return SearchResult(
+            ids=results["ids"][0],
+            documents=results["documents"][0],
+            metadatas=results["metadatas"][0],
+            distances=results["distances"][0],
+)
 
     def count(self) -> int:
         """
@@ -138,9 +153,12 @@ class VectorStore:
         if not self._config["allow_reset"]:
             raise RuntimeError("Vector store reset is disabled.")
 
-        collection_name = self._config["collection_name"]
+        collection_name = self._collection_name
 
-        self._client.delete_collection(collection_name)
+        try:
+            self._client.delete_collection(collection_name)
+        except Exception:
+            logger.info("Collection '%s' does not exist.", collection_name)
 
         self._collection = self._client.get_or_create_collection(
             name=collection_name,
@@ -181,7 +199,7 @@ class VectorStore:
             ChromaDB collection.
         """
         return self._client.get_or_create_collection(
-            name=self._config["collection_name"],
+            name=self._collection_name,
             metadata={
                 "hnsw:space": self._config["distance_metric"]
             },
