@@ -59,6 +59,7 @@ def build_documents(
             product = Product(
                 asin=product_row["asin"],
                 title=product_row["title"],
+                availability=product_row["availability"],
                 brand_name=product_row["brand_name"],
                 seller_name=product_row["seller_name"],
                 manufacturer=product_row["manufacturer"],
@@ -96,10 +97,20 @@ def build_documents(
                 text=format_document(product, review_objects),
                 metadata={
                     "asin": asin,
+                    "title": product.title,
                     "brand_name": product.brand_name,
+                    "availability": product.availability,
                     "breadcrumbs": product.breadcrumbs,
                     "price_value": product.price_value,
                     "rating_stars": product.rating_stars,
+                    "seller_name": product.seller_name,
+                    "manufacturer": product.manufacturer,
+                    "list_price": product.list_price,
+                    "rating_count": product.rating_count,
+                    "best_seller_rank": product.best_sellers_rank,
+                    "recent_purchases": product.recent_purchases,
+                    "size": product.size,
+                    "color": product.color,
                 },
             )
 

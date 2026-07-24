@@ -13,7 +13,7 @@ class Product:
     manufacturer: str
     breadcrumbs: str
     about_item: str
-
+    availability: str
     price_value: float
     list_price: float
 

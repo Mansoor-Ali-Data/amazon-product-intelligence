@@ -96,6 +96,6 @@ def main() -> None:
 
     logger.info("Document Builder validation completed successfully.")
 
-
+    
 if __name__ == "__main__":
     main()
