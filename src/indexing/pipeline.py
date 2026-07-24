@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 Offline indexing pipeline.
 
@@ -5,7 +6,6 @@ Coordinates the complete document indexing workflow from processed datasets
 to vector database storage.
 """
 
-from __future__ import annotations
 
 from config.logging import get_logger
 
