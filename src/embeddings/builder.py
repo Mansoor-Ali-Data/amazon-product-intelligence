@@ -1,8 +1,8 @@
 """
 Build embedded chunks from text chunks.
 """
-import time
 from __future__ import annotations
+import time
 
 import logging
 
