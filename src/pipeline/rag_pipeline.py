@@ -23,7 +23,8 @@ from src.llm.client import LLMClient
 from src.prompt_builder.builder import PromptBuilder
 from src.retrieval.retriever import Retriever
 from src.vector_store.chroma_store import VectorStore
-
+from src.pipeline.models import RAGResponse
+from collections.abc import Callable
 logger = get_logger(__name__)
 
 
@@ -55,7 +56,8 @@ class RAGPipeline:
         self,
         query: str,
         top_k: int = 3,
-    ) -> str:
+        progress_callback: Callable[[str], None] | None = None,
+    ) -> RAGResponse:
         """
         Answer a user question using Retrieval-Augmented Generation.
 
@@ -78,23 +80,25 @@ class RAGPipeline:
         # --------------------------------------------------------------
         # Retrieve relevant chunks
         # --------------------------------------------------------------
-
-        chunks = self._retriever.retrieve(
+        if progress_callback:
+            progress_callback("🔍 Retrieving relevant products...")
+        retrieved_chunks = self._retriever.retrieve(
             query=query,
             top_k=top_k,
         )
 
         logger.info(
             "Retrieved %d chunks.",
-            len(chunks),
+            len(retrieved_chunks),
         )
 
         # --------------------------------------------------------------
         # Build LLM context
         # --------------------------------------------------------------
-
+        if progress_callback:
+            progress_callback("🧠 Building LLM context...")
         context = self._context_builder.build(
-            chunks,
+            retrieved_chunks,
         )
 
         logger.info(
@@ -104,7 +108,8 @@ class RAGPipeline:
         # --------------------------------------------------------------
         # Build prompt
         # --------------------------------------------------------------
-
+        if progress_callback:
+            progress_callback("📝 Constructing prompt...")
         prompt = self._prompt_builder.build(
             query=query,
             context=context,
@@ -117,7 +122,8 @@ class RAGPipeline:
         # --------------------------------------------------------------
         # Generate response
         # --------------------------------------------------------------
-
+        if progress_callback:
+            progress_callback("🤖 Generating answer...")
         answer = self._llm.generate(
             prompt,
         )
@@ -126,4 +132,7 @@ class RAGPipeline:
             "RAG pipeline completed successfully.",
         )
 
-        return answer
+        return RAGResponse(
+            answer=answer,
+            retrieved_chunks=retrieved_chunks,
+        )

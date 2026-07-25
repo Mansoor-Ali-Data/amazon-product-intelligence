@@ -19,7 +19,7 @@ def main() -> None:
 
     pipeline = RAGPipeline()
 
-    answer = pipeline.ask(query)
+    response = pipeline.ask(query)
 
     print("=" * 80)
     print("Amazon Product Intelligence Assistant")
@@ -30,7 +30,7 @@ def main() -> None:
     print("-" * 80)
     print("Answer")
     print("-" * 80)
-    print(answer)
+    print(response.answer)
     print()
 
 
