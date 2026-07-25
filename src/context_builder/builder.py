@@ -10,7 +10,7 @@ This module performs no retrieval, filtering, or prompt construction.
 from __future__ import annotations
 
 from src.retrieval.models import RetrievedChunk
-
+from .formatter import format_context
 
 class ContextBuilder:
     """
@@ -39,12 +39,9 @@ class ContextBuilder:
 
         for index, chunk in enumerate(chunks, start=1):
 
-            section = (
-                    f"Retrieved Context {index}\n"
-                    f"{'=' * 80}\n"
-                    f"ASIN: {chunk.asin}\n"
-                    f"Brand: {chunk.metadata.get('brand_name', 'Unknown')}\n\n"
-                    f"{chunk.text.strip()}"
+            section = format_context(
+                chunk=chunk,
+                index=index,
             )
 
             sections.append(section)
