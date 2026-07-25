@@ -14,7 +14,7 @@ the rest of the application.
 from __future__ import annotations
 
 from typing import Any
-
+import math
 import chromadb
 from chromadb.api import ClientAPI
 from chromadb.api.models.Collection import Collection
@@ -80,13 +80,28 @@ class VectorStore:
             "ids, documents, embeddings, and metadatas must have the same length."
         )
 
-        self._collection.add(
-            ids=ids,
-            documents=documents,
-            embeddings=embeddings,
-            metadatas=metadatas,
-            
-        )
+        max_batch_size = self._client.get_max_batch_size()
+        total_batches = math.ceil(len(ids) / max_batch_size)
+
+        for batch_number, start in enumerate(
+            range(0, len(ids), max_batch_size),
+            start=1,
+        ):
+
+            end = min(start + max_batch_size, len(ids))
+            logger.info(
+                "Adding batch %d/%d (%d vectors)...",
+                batch_number,
+                total_batches,
+                end - start,
+            )
+
+            self._collection.add(
+                ids=ids[start:end],
+                documents=documents[start:end],
+                embeddings=embeddings[start:end],
+                metadatas=metadatas[start:end],
+            )
 
         logger.info(
             "Added %d vectors to collection '%s'.",

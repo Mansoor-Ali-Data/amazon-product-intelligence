@@ -107,7 +107,7 @@ def build_documents(
                     "manufacturer": product.manufacturer,
                     "list_price": product.list_price,
                     "rating_count": product.rating_count,
-                    "best_seller_rank": product.best_sellers_rank,
+                    "best_sellers_rank": product.best_sellers_rank,
                     "recent_purchases": product.recent_purchases,
                     "size": product.size,
                     "color": product.color,
