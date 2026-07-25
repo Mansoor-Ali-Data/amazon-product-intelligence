@@ -32,21 +32,21 @@ def main() -> None:
     for chunk in results:
         preview = re.sub(r"\s+", " ", chunk.text)
         preview = re.sub(r"[=]{2,}", "", preview)
-    about_idx = preview.find("ABOUT THIS ITEM")
+        about_idx = preview.find("ABOUT THIS ITEM")
 
-    if about_idx != -1:
-        preview = preview[about_idx:]
+        if about_idx != -1:
+            preview = preview[about_idx:]
 
-    preview = preview[:200]
+        preview = preview[:200]
 
-    print(f"Rank     : {chunk.rank}")
-    print(f"Distance : {chunk.distance:.4f}")
-    print(f"ASIN     : {chunk.asin}")
-    print(f"Brand    : {chunk.metadata.get('brand_name', 'N/A')}")
-    print()
-    print("Preview:")
-    print(preview + "...")
-    print("-" * 80)
+        print(f"Rank     : {chunk.rank}")
+        print(f"Distance : {chunk.distance:.4f}")
+        print(f"ASIN     : {chunk.asin}")
+        print(f"Brand    : {chunk.metadata.get('brand_name', 'N/A')}")
+        print()
+        print("Preview:")
+        print(preview + "...")
+        print("-" * 80)
 
     
 
