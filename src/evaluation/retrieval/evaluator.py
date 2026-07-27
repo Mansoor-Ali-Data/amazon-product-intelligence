@@ -11,19 +11,26 @@ from __future__ import annotations
 
 from statistics import mean
 
+from src.data.data_loader import load_processed_data
+
 from src.evaluation.retrieval.dataset import (
     EvaluationExample,
 )
+
 from src.evaluation.retrieval.metrics import (
     hit_rate,
     precision_at_k,
     recall_at_k,
     reciprocal_rank,
 )
+
 from src.evaluation.retrieval.models import (
+    EvaluationProduct,
     EvaluationResult,
     EvaluationSummary,
 )
+
+from src.retrieval.models import RetrievedChunk
 from src.retrieval.retriever import Retriever
 
 
@@ -46,6 +53,14 @@ class RetrievalEvaluator:
 
         self._retriever = retriever
 
+        products_df, _ = load_processed_data()
+
+        self._products = (
+            products_df
+            .set_index("asin")
+            .to_dict("index")
+        )
+
     def evaluate(
         self,
         dataset: list[EvaluationExample],
@@ -59,10 +74,10 @@ class RetrievalEvaluator:
                 Benchmark evaluation dataset.
 
             top_k:
-                Number of documents to retrieve.
+                Number of retrieved chunks.
 
         Returns:
-            Evaluation summary.
+            Retrieval evaluation summary.
         """
 
         results: list[EvaluationResult] = []
@@ -74,34 +89,51 @@ class RetrievalEvaluator:
                 top_k=top_k,
             )
 
-            retrieved_asins = self._extract_unique_asins(
-                chunks,
+            expected_products = (
+                self._build_expected_products(
+                    example.expected_asins,
+                )
             )
 
-            result = EvaluationResult(
-                query=example.query,
-                category=example.category,
-                expected_asins=example.expected_asins,
-                retrieved_asins=retrieved_asins,
-                hit_rate=hit_rate(
-                    example.expected_asins,
-                    retrieved_asins,
-                ),
-                precision_at_k=precision_at_k(
-                    example.expected_asins,
-                    retrieved_asins,
-                ),
-                recall_at_k=recall_at_k(
-                    example.expected_asins,
-                    retrieved_asins,
-                ),
-                reciprocal_rank=reciprocal_rank(
-                    example.expected_asins,
-                    retrieved_asins,
-                ),
+            retrieved_products = (
+                self._build_retrieved_products(
+                    chunks,
+                )
             )
 
-            results.append(result)
+            expected_asins = self._extract_asins(
+                expected_products,
+            )
+
+            retrieved_asins = self._extract_asins(
+                retrieved_products,
+            )
+
+            results.append(
+                EvaluationResult(
+                    query=example.query,
+                    benchmark=example.benchmark,
+                    category=example.category,
+                    expected_products=expected_products,
+                    retrieved_products=retrieved_products,
+                    hit_rate=hit_rate(
+                        expected_asins,
+                        retrieved_asins,
+                    ),
+                    precision_at_k=precision_at_k(
+                        expected_asins,
+                        retrieved_asins,
+                    ),
+                    recall_at_k=recall_at_k(
+                        expected_asins,
+                        retrieved_asins,
+                    ),
+                    reciprocal_rank=reciprocal_rank(
+                        expected_asins,
+                        retrieved_asins,
+                    ),
+                )
+            )
 
         return EvaluationSummary(
             average_hit_rate=mean(
@@ -123,31 +155,77 @@ class RetrievalEvaluator:
             results=results,
         )
 
-    @staticmethod
-    def _extract_unique_asins(
-        chunks,
-    ) -> list[str]:
+    def _build_expected_products(
+        self,
+        expected_asins: list[str],
+    ) -> list[EvaluationProduct]:
         """
-        Extract unique ASINs from retrieved chunks while preserving
-        retrieval order.
+        Build evaluation products from expected ASINs.
+        """
 
-        Args:
-            chunks:
-                Retrieved chunks.
+        products: list[EvaluationProduct] = []
 
-        Returns:
-            Ordered list of unique retrieved ASINs.
+        for asin in expected_asins:
+
+            product = self._products[asin]
+
+            products.append(
+                EvaluationProduct(
+                    asin=asin,
+                    brand=product["brand_name"],
+                    title=product["title"],
+                    price=product["price_value"],
+                    rating=product["rating_stars"],
+                )
+            )
+
+        return products
+
+    def _build_retrieved_products(
+        self,
+        chunks: list[RetrievedChunk],
+    ) -> list[EvaluationProduct]:
+        """
+        Build evaluation products from retrieved chunks.
+
+        Duplicate ASINs are removed while preserving retrieval order.
         """
 
         seen: set[str] = set()
-        unique_asins: list[str] = []
+
+        products: list[EvaluationProduct] = []
 
         for chunk in chunks:
 
-            asin = chunk.metadata["asin"]
+            if chunk.asin in seen:
+                continue
 
-            if asin not in seen:
-                seen.add(asin)
-                unique_asins.append(asin)
+            seen.add(chunk.asin)
 
-        return unique_asins
+            product = self._products[chunk.asin]
+
+            products.append(
+                EvaluationProduct(
+                    asin=chunk.asin,
+                    brand=product["brand_name"],
+                    title=product["title"],
+                    price=product["price_value"],
+                    rating=product["rating_stars"],
+                    distance=chunk.distance,
+                )
+            )
+
+        return products
+
+    @staticmethod
+    def _extract_asins(
+        products: list[EvaluationProduct],
+    ) -> list[str]:
+        """
+        Extract ASINs from evaluation products.
+        """
+
+        return [
+            product.asin
+            for product in products
+        ]
