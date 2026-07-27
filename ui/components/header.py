@@ -11,7 +11,7 @@ from __future__ import annotations
 import streamlit as st
 
 
-def render_header() -> None:
+def render_header() -> str | None:
     """
     Render the application header.
     """
@@ -29,14 +29,23 @@ def render_header() -> None:
 
         This assistant answers questions using Amazon Fashion product
         information and customer reviews.
-
-        **Example questions**
-        - Recommend a men's polo shirt under $25
-        - Compare two golf polo shirts
-        - Which shirt has the highest customer rating?
-        - What materials are used in this product?
-        - Summarize customer opinions for this item
         """
-    )
-
+        )
+        
+        
+    st.markdown("### 💡 Try one of these questions")
+    example_questions = [
+            "Recommend a men's polo shirt under $25",
+            "Compare two golf polo shirts",
+            "Which polo shirt has the highest customer rating?",
+            "What materials are used in this product?",
+            "Summarize customer opinions for this item",
+        
+    ]
+    for question in example_questions:
+        if st.button(question,use_container_width=True,):
+            return question
+        
     st.divider()
+
+    return None

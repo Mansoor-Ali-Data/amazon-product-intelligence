@@ -48,21 +48,27 @@ pipeline = load_pipeline()
 # ---------------------------------------------------------------------
 # UI
 # ---------------------------------------------------------------------
+initialize_chat()
 
-render_header()
+selected_question = None
+
+
+if not st.session_state.messages:
+    selected_question = render_header()
 
 render_sidebar()
 
-initialize_chat()
 
 render_messages()
+
+query = get_user_query()
+
+query = query or selected_question
 
 
 # ---------------------------------------------------------------------
 # User Interaction
 # ---------------------------------------------------------------------
-
-query = get_user_query()
 
 if query:
 
@@ -101,14 +107,6 @@ if query:
         render_sources(
             response.retrieved_chunks,
         )
-
-    # Store assistant response
-    st.session_state.messages.append(
-        {
-            "role": "assistant",
-            "content": response.answer,
-        }
-    )
 
     # Store assistant response
     st.session_state.messages.append(

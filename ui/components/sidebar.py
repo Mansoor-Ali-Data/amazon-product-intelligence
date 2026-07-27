@@ -33,27 +33,13 @@ def render_sidebar() -> None:
 
         st.divider()
 
-        st.subheader("💡 Example Questions")
-
-        st.markdown(
-            """
-            - Recommend a men's polo shirt under $25
-            - Compare two golf polo shirts
-            - Which polo shirt has the best rating?
-            - Which shirts are moisture wicking?
-            - Summarize customer reviews for this product
-            """
-        )
-
-        st.divider()
-
         st.subheader("🛠️ Controls")
 
         if st.button(
-            "🗑️ Clear Conversation",
+            "🗑 Clear Conversation",
             use_container_width=True,
         ):
-            # st.session_state.messages = []
+            st.session_state.pop("messages", None)
             st.rerun()
 
         st.divider()
