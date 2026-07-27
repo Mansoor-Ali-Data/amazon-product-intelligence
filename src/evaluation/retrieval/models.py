@@ -12,7 +12,33 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from src.evaluation.retrieval.dataset import QueryCategory
+from src.evaluation.retrieval.dataset import (
+    BenchmarkType,
+    QueryCategory,
+)
+
+
+@dataclass(frozen=True, slots=True)
+class EvaluationProduct:
+    """
+    Product used during retrieval evaluation.
+
+    This model represents both:
+
+    - Expected products (ground truth)
+    - Retrieved products
+
+    Similarity score is only populated for retrieved products.
+    """
+
+    asin: str
+    brand: str
+    title: str
+
+    price: float | None
+    rating: float | None
+
+    distance: float | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -22,10 +48,11 @@ class EvaluationResult:
     """
 
     query: str
+    benchmark: BenchmarkType
     category: QueryCategory
 
-    expected_asins: list[str]
-    retrieved_asins: list[str]
+    expected_products: list[EvaluationProduct]
+    retrieved_products: list[EvaluationProduct]
 
     hit_rate: float
     precision_at_k: float
