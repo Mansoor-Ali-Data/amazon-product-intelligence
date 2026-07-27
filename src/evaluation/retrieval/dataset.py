@@ -5,6 +5,7 @@ Each evaluation example contains:
 
 - A natural language query.
 - The expected relevant ASIN(s).
+- The benchmark type.
 - A query category.
 - A short description of what is being tested.
 
@@ -31,6 +32,15 @@ class QueryCategory(StrEnum):
     COMPARISON = "comparison"
 
 
+class BenchmarkType(StrEnum):
+    """
+    Supported retrieval benchmark types.
+    """
+
+    SEMANTIC = "semantic"
+    METADATA = "metadata"
+
+
 @dataclass(frozen=True, slots=True)
 class EvaluationExample:
     """
@@ -39,8 +49,10 @@ class EvaluationExample:
 
     query: str
     expected_asins: list[str]
+    benchmark: BenchmarkType
     category: QueryCategory
     description: str
+
 
 EVALUATION_DATASET: list[EvaluationExample] = [
 
@@ -50,8 +62,11 @@ EVALUATION_DATASET: list[EvaluationExample] = [
 
     EvaluationExample(
         query="Recommend a men's polo shirt.",
-        expected_asins=["B0B59BJG6Y"],
-        category="recommendation",
+        expected_asins=[
+            "B0B59BJG6Y",
+        ],
+        benchmark=BenchmarkType.SEMANTIC,
+        category=QueryCategory.RECOMMENDATION,
         description="General recommendation for a men's polo shirt.",
     ),
 
@@ -62,7 +77,8 @@ EVALUATION_DATASET: list[EvaluationExample] = [
             "B0DK5FZ325",
             "B0BGXTC1FR",
         ],
-        category="recommendation",
+        benchmark=BenchmarkType.SEMANTIC,
+        category=QueryCategory.RECOMMENDATION,
         description="Retrieve moisture-wicking polo shirts.",
     ),
 
@@ -73,7 +89,8 @@ EVALUATION_DATASET: list[EvaluationExample] = [
             "B0DK5FZ325",
             "B0BGXTC1FR",
         ],
-        category="recommendation",
+        benchmark=BenchmarkType.SEMANTIC,
+        category=QueryCategory.RECOMMENDATION,
         description="Retrieve golf polo shirts.",
     ),
 
@@ -87,7 +104,8 @@ EVALUATION_DATASET: list[EvaluationExample] = [
             "B0DRXF62JH",
             "B09MHPSWY2",
         ],
-        category="brand",
+        benchmark=BenchmarkType.SEMANTIC,
+        category=QueryCategory.BRAND,
         description="Retrieve products from the ZITY brand.",
     ),
 
@@ -96,7 +114,8 @@ EVALUATION_DATASET: list[EvaluationExample] = [
         expected_asins=[
             "B0DLGB4RYH",
         ],
-        category="brand",
+        benchmark=BenchmarkType.SEMANTIC,
+        category=QueryCategory.BRAND,
         description="Retrieve products from COOFANDY.",
     ),
 
@@ -106,12 +125,13 @@ EVALUATION_DATASET: list[EvaluationExample] = [
             "B0DPQC1NSV",
             "B0CQTCDJJ7",
         ],
-        category="brand",
+        benchmark=BenchmarkType.SEMANTIC,
+        category=QueryCategory.BRAND,
         description="Retrieve products from M MAELREG.",
     ),
 
     # ------------------------------------------------------------------
-    # Price
+    # Price (Metadata Retrieval)
     # ------------------------------------------------------------------
 
     EvaluationExample(
@@ -119,8 +139,9 @@ EVALUATION_DATASET: list[EvaluationExample] = [
         expected_asins=[
             "B0DLGB4RYH",
         ],
-        category="price",
-        description="Retrieve affordable polo shirts.",
+        benchmark=BenchmarkType.METADATA,
+        category=QueryCategory.PRICE,
+        description="Retrieve polo shirts priced below $20.",
     ),
 
     EvaluationExample(
@@ -130,12 +151,13 @@ EVALUATION_DATASET: list[EvaluationExample] = [
             "B0BGXTC1FR",
             "B0CQTCDJJ7",
         ],
-        category="price",
+        benchmark=BenchmarkType.METADATA,
+        category=QueryCategory.PRICE,
         description="Retrieve polo shirts priced below $30.",
     ),
 
     # ------------------------------------------------------------------
-    # Rating
+    # Rating (Metadata Retrieval)
     # ------------------------------------------------------------------
 
     EvaluationExample(
@@ -144,8 +166,9 @@ EVALUATION_DATASET: list[EvaluationExample] = [
             "B0DK5FZ325",
             "B0DPQC1NSV",
         ],
-        category="rating",
-        description="Retrieve highly rated polo shirts.",
+        benchmark=BenchmarkType.METADATA,
+        category=QueryCategory.RATING,
+        description="Retrieve the highest rated polo shirts.",
     ),
 
     # ------------------------------------------------------------------
@@ -159,7 +182,8 @@ EVALUATION_DATASET: list[EvaluationExample] = [
             "B0DK5FZ325",
             "B0BGSDG377",
         ],
-        category="feature",
+        benchmark=BenchmarkType.SEMANTIC,
+        category=QueryCategory.FEATURE,
         description="Retrieve quick-dry polo shirts.",
     ),
 
@@ -168,7 +192,8 @@ EVALUATION_DATASET: list[EvaluationExample] = [
         expected_asins=[
             "B0CQTCDJJ7",
         ],
-        category="feature",
+        benchmark=BenchmarkType.SEMANTIC,
+        category=QueryCategory.FEATURE,
         description="Retrieve lightweight polo shirts.",
     ),
 
@@ -178,7 +203,41 @@ EVALUATION_DATASET: list[EvaluationExample] = [
             "B0DK5FZ325",
             "B0DPQC1NSV",
         ],
-        category="feature",
+        benchmark=BenchmarkType.SEMANTIC,
+        category=QueryCategory.FEATURE,
         description="Retrieve performance golf shirts.",
     ),
 ]
+
+
+# ------------------------------------------------------------------
+# Benchmark Views
+# ------------------------------------------------------------------
+
+SEMANTIC_BENCHMARK: list[EvaluationExample] = [
+    example
+    for example in EVALUATION_DATASET
+    if example.benchmark == BenchmarkType.SEMANTIC
+]
+
+METADATA_BENCHMARK: list[EvaluationExample] = [
+    example
+    for example in EVALUATION_DATASET
+    if example.benchmark == BenchmarkType.METADATA
+]
+
+
+def get_semantic_benchmark() -> list[EvaluationExample]:
+    """
+    Return the semantic retrieval benchmark.
+    """
+
+    return SEMANTIC_BENCHMARK
+
+
+def get_metadata_benchmark() -> list[EvaluationExample]:
+    """
+    Return the metadata retrieval benchmark.
+    """
+
+    return METADATA_BENCHMARK
