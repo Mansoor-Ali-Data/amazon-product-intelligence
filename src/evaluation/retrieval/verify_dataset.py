@@ -44,6 +44,7 @@ def main() -> None:
         print()
 
         print(f"Query       : {example.query}")
+        print(f"Benchmark   : {example.benchmark.value}")
         print(f"Category    : {example.category}")
         print(f"Description : {example.description}")
         print()
