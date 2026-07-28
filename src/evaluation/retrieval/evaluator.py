@@ -33,6 +33,9 @@ from src.evaluation.retrieval.models import (
 from src.retrieval.models import RetrievedChunk
 from src.retrieval.retriever import Retriever
 
+from src.evaluation.retrieval.rules import RuleEvaluator
+from src.evaluation.retrieval.rules import RelevanceRule
+
 
 class RetrievalEvaluator:
     """
@@ -50,7 +53,7 @@ class RetrievalEvaluator:
             retriever:
                 Retriever used during evaluation.
         """
-
+        self._rule_evaluator = RuleEvaluator()
         self._retriever = retriever
 
         products_df, _ = load_processed_data()
@@ -98,6 +101,7 @@ class RetrievalEvaluator:
             retrieved_products = (
                 self._build_retrieved_products(
                     chunks,
+                    example.rules,
                 )
             )
 
@@ -184,6 +188,7 @@ class RetrievalEvaluator:
     def _build_retrieved_products(
         self,
         chunks: list[RetrievedChunk],
+        rules: list[RelevanceRule],
     ) -> list[EvaluationProduct]:
         """
         Build evaluation products from retrieved chunks.
@@ -204,18 +209,33 @@ class RetrievalEvaluator:
 
             product = self._products[chunk.asin]
 
-            products.append(
-                EvaluationProduct(
-                    asin=chunk.asin,
-                    brand=product["brand_name"],
-                    title=product["title"],
-                    price=product["price_value"],
-                    rating=product["rating_stars"],
-                    distance=chunk.distance,
-                )
+            evaluation_product = EvaluationProduct(
+                asin=chunk.asin,
+                brand=product["brand_name"],
+                title=product["title"],
+                price=product["price_value"],
+                rating=product["rating_stars"],
+                distance=chunk.distance,
             )
 
-        return products
+            rule_match = self._rule_evaluator.matches(
+                evaluation_product,
+                rules,
+            )
+
+            evaluation_product = EvaluationProduct(
+                asin=chunk.asin,
+                brand=product["brand_name"],
+                title=product["title"],
+                price=product["price_value"],
+                rating=product["rating_stars"],
+                distance=chunk.distance,
+                rule_match=rule_match,
+            )
+
+            products.append(evaluation_product)
+
+            return products
 
     @staticmethod
     def _extract_asins(
