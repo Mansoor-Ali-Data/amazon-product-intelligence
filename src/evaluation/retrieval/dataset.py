@@ -17,28 +17,12 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import StrEnum
+from src.evaluation.retrieval.rules import RelevanceRule
+from src.evaluation.retrieval.rules import RuleOperator
+from src.evaluation.retrieval.enums import  ( QueryCategory , BenchmarkType)
 
 
-class QueryCategory(StrEnum):
-    """
-    Supported retrieval evaluation query categories.
-    """
 
-    RECOMMENDATION = "recommendation"
-    BRAND = "brand"
-    PRICE = "price"
-    FEATURE = "feature"
-    RATING = "rating"
-    COMPARISON = "comparison"
-
-
-class BenchmarkType(StrEnum):
-    """
-    Supported retrieval benchmark types.
-    """
-
-    SEMANTIC = "semantic"
-    METADATA = "metadata"
 
 
 @dataclass(frozen=True, slots=True)
@@ -51,6 +35,7 @@ class EvaluationExample:
     expected_asins: list[str]
     benchmark: BenchmarkType
     category: QueryCategory
+    rules: list[RelevanceRule]
     description: str
 
 
@@ -68,6 +53,7 @@ EVALUATION_DATASET: list[EvaluationExample] = [
         benchmark=BenchmarkType.SEMANTIC,
         category=QueryCategory.RECOMMENDATION,
         description="General recommendation for a men's polo shirt.",
+        rules=[]
     ),
 
     EvaluationExample(
@@ -80,6 +66,13 @@ EVALUATION_DATASET: list[EvaluationExample] = [
         benchmark=BenchmarkType.SEMANTIC,
         category=QueryCategory.RECOMMENDATION,
         description="Retrieve moisture-wicking polo shirts.",
+        rules=[
+            RelevanceRule(
+                field="title",
+                operator=RuleOperator.CONTAINS,
+                value="moisture wicking",
+            )
+        ]
     ),
 
     EvaluationExample(
@@ -92,6 +85,13 @@ EVALUATION_DATASET: list[EvaluationExample] = [
         benchmark=BenchmarkType.SEMANTIC,
         category=QueryCategory.RECOMMENDATION,
         description="Retrieve golf polo shirts.",
+        rules=[
+            RelevanceRule(
+                field="title",
+                operator=RuleOperator.CONTAINS,
+                value="golf",
+            )
+        ]
     ),
 
     # ------------------------------------------------------------------
@@ -107,6 +107,13 @@ EVALUATION_DATASET: list[EvaluationExample] = [
         benchmark=BenchmarkType.SEMANTIC,
         category=QueryCategory.BRAND,
         description="Retrieve products from the ZITY brand.",
+        rules=[
+            RelevanceRule(
+                field="brand",
+                operator=RuleOperator.EQUALS,
+                value="ZITY Store",
+            )
+        ]
     ),
 
     EvaluationExample(
@@ -117,6 +124,13 @@ EVALUATION_DATASET: list[EvaluationExample] = [
         benchmark=BenchmarkType.SEMANTIC,
         category=QueryCategory.BRAND,
         description="Retrieve products from COOFANDY.",
+        rules=[
+            RelevanceRule(
+                field="brand",
+                operator=RuleOperator.EQUALS,
+                value="COOFANDY Store",
+            )
+        ]
     ),
 
     EvaluationExample(
@@ -128,6 +142,13 @@ EVALUATION_DATASET: list[EvaluationExample] = [
         benchmark=BenchmarkType.SEMANTIC,
         category=QueryCategory.BRAND,
         description="Retrieve products from M MAELREG.",
+        rules=[
+            RelevanceRule(
+                field="brand",
+                operator=RuleOperator.EQUALS,
+                value="M MAELREG Store",
+            )
+        ]
     ),
 
     # ------------------------------------------------------------------
@@ -142,6 +163,13 @@ EVALUATION_DATASET: list[EvaluationExample] = [
         benchmark=BenchmarkType.METADATA,
         category=QueryCategory.PRICE,
         description="Retrieve polo shirts priced below $20.",
+        rules=[
+            RelevanceRule(
+                field="price",
+                operator=RuleOperator.LESS_EQUAL,
+                value=20.0,
+            )
+        ]
     ),
 
     EvaluationExample(
@@ -154,6 +182,13 @@ EVALUATION_DATASET: list[EvaluationExample] = [
         benchmark=BenchmarkType.METADATA,
         category=QueryCategory.PRICE,
         description="Retrieve polo shirts priced below $30.",
+        rules=[
+            RelevanceRule(
+                field="price",
+                operator=RuleOperator.LESS_EQUAL,
+                value=30.0,
+            )
+        ]
     ),
 
     # ------------------------------------------------------------------
@@ -169,6 +204,13 @@ EVALUATION_DATASET: list[EvaluationExample] = [
         benchmark=BenchmarkType.METADATA,
         category=QueryCategory.RATING,
         description="Retrieve the highest rated polo shirts.",
+        rules=[
+            RelevanceRule(
+                field="rating",
+                operator=RuleOperator.GREATER_EQUAL,
+                value=4.0,
+            )
+        ]
     ),
 
     # ------------------------------------------------------------------
@@ -185,6 +227,13 @@ EVALUATION_DATASET: list[EvaluationExample] = [
         benchmark=BenchmarkType.SEMANTIC,
         category=QueryCategory.FEATURE,
         description="Retrieve quick-dry polo shirts.",
+        rules=[
+            RelevanceRule(
+                field="title",
+                operator=RuleOperator.CONTAINS,
+                value="quick dry",
+            )
+        ]
     ),
 
     EvaluationExample(
@@ -195,6 +244,13 @@ EVALUATION_DATASET: list[EvaluationExample] = [
         benchmark=BenchmarkType.SEMANTIC,
         category=QueryCategory.FEATURE,
         description="Retrieve lightweight polo shirts.",
+        rules=[
+            RelevanceRule(
+                field="title",
+                operator=RuleOperator.CONTAINS,
+                value="lightweight",
+            )
+        ]
     ),
 
     EvaluationExample(
@@ -206,6 +262,13 @@ EVALUATION_DATASET: list[EvaluationExample] = [
         benchmark=BenchmarkType.SEMANTIC,
         category=QueryCategory.FEATURE,
         description="Retrieve performance golf shirts.",
+        rules=[
+            RelevanceRule(
+                field="title",
+                operator=RuleOperator.CONTAINS,
+                value="performance",
+            )
+        ]
     ),
 ]
 
