@@ -220,6 +220,14 @@ class EvaluationFormatter:
 
             print()
 
+            if product.rule_match is not None:
+
+                status = "✓ YES" if product.rule_match else "✗ NO"
+
+                print(
+                    f"Intent Match: {status}"
+                )
+
     def _print_metrics(
         self,
         result: EvaluationResult,
