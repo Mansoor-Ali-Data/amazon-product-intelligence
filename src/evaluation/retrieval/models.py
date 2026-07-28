@@ -12,10 +12,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from src.evaluation.retrieval.dataset import (
-    BenchmarkType,
-    QueryCategory,
-)
+from src.evaluation.retrieval.enums import  ( QueryCategory , BenchmarkType)
+
 
 
 @dataclass(frozen=True, slots=True)
@@ -28,7 +26,8 @@ class EvaluationProduct:
     - Expected products (ground truth)
     - Retrieved products
 
-    Similarity score is only populated for retrieved products.
+    Distance and rule_match are only populated for
+    retrieved products.
     """
 
     asin: str
@@ -39,6 +38,7 @@ class EvaluationProduct:
     rating: float | None
 
     distance: float | None = None
+    rule_match: bool | None = None
 
 
 @dataclass(frozen=True, slots=True)
