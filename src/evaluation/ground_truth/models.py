@@ -43,6 +43,8 @@ class GroundTruthExample:
 
     description: str
 
+    search_terms: list[str]
+
 
 @dataclass(frozen=True, slots=True)
 class GroundTruthDataset:

@@ -101,11 +101,10 @@ class KeywordGenerator(CandidateGenerator):
     Candidate generator for keyword/feature queries.
     """
 
-    SEARCH_COLUMNS = [
+    SEARCH_COLUMNS = (
         "title",
         "about_item",
-        "product_description",
-    ]
+    )
 
     def _filter(
         self,
@@ -113,34 +112,32 @@ class KeywordGenerator(CandidateGenerator):
         products_df: pd.DataFrame,
     ) -> pd.DataFrame:
 
-        keywords = (
-            example.query.lower()
-            .replace("show", "")
-            .replace("recommend", "")
-            .replace("polo shirts", "")
-            .replace("golf shirts", "")
-            .replace("shirt", "")
-            .split()
-        )
-
         mask = pd.Series(
-            False,
+            True,
             index=products_df.index,
         )
 
-        for column in self.SEARCH_COLUMNS:
+        for term in example.search_terms:
 
-            text = (
-                products_df[column]
-                .fillna("")
-                .str.lower()
+            term_mask = pd.Series(
+                False,
+                index=products_df.index,
             )
 
-            for keyword in keywords:
-                mask |= text.str.contains(
-                    keyword,
+            for column in self.SEARCH_COLUMNS:
+
+                text = (
+                    products_df[column]
+                    .fillna("")
+                    .str.lower()
+                )
+
+                term_mask |= text.str.contains(
+                    term.lower(),
                     regex=False,
                 )
+
+            mask &= term_mask
 
         return products_df[mask]
 
