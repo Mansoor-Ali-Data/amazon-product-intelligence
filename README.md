@@ -6,7 +6,7 @@ Modern e-commerce platforms contain a vast amount of information distributed acr
 
 This project addresses that challenge by transforming raw Amazon product and review datasets into a **retrieval-optimized knowledge base**. Instead of relying solely on a Large Language Model's internal knowledge, the system retrieves the most relevant product information from a vector database and uses that retrieved context to generate accurate, grounded, and evidence-based responses.
 
-The project is being developed as part of **LLM Zoomcamp** and serves as a **flagship AI Engineering portfolio project**, showcasing the complete lifecycle of building a modern RAG system—from data preprocessing and document modeling to embedding generation, semantic retrieval, evaluation, and deployment.
+The project is being developed as part of **LLM Zoomcamp** and serves as a **AI Engineering portfolio project**, showcasing the complete lifecycle of building a modern RAG system—from data preprocessing and document modeling to embedding generation, semantic retrieval, evaluation, and deployment.
 
 Beyond building a functional application, the project emphasizes **production-inspired software engineering practices**, including modular architecture, separation of concerns, configuration-driven development, reproducible workflows, and evaluation-first development. Each stage of the pipeline is designed as an independent, maintainable component that can be improved, tested, and evaluated without affecting the rest of the system.
 
