@@ -1,9 +1,9 @@
 """
-Data models for the retrieval ground truth dataset.
+Data models used by the Ground Truth Builder.
 
-The ground truth dataset defines benchmark queries and their
-expected relevant products. It serves as the reference dataset
-for retrieval evaluation.
+These models define semantic benchmark queries and candidate
+products for manual annotation before creating the finalized
+retrieval benchmark.
 """
 
 from __future__ import annotations

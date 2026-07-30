@@ -13,10 +13,8 @@ from src.evaluation.enums import QueryCategory
 from src.evaluation.ground_truth.generators import (
     BrandGenerator,
     CandidateGenerator,
-    KeywordGenerator,
-    PriceGenerator,
-    RatingGenerator,
-)
+    KeywordGenerator,)
+
 from src.evaluation.ground_truth.models import (
     CandidateProduct,
     GroundTruthExample,
@@ -40,10 +38,7 @@ class GroundTruthBuilder:
             CandidateGenerator,
         ] = {
             QueryCategory.BRAND: BrandGenerator(),
-            QueryCategory.FEATURE: KeywordGenerator(),
             QueryCategory.RECOMMENDATION: KeywordGenerator(),
-            QueryCategory.PRICE: PriceGenerator(),
-            QueryCategory.RATING: RatingGenerator(),
         }
 
     def build(

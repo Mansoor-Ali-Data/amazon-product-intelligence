@@ -101,10 +101,7 @@ class GroundTruthFormatter:
             "Next Step:"
         )
         lines.append(
-            "Review the candidate products and approve the relevant ASINs."
-        )
-        lines.append(
-            "Copy the approved ASINs into the retrieval benchmark dataset."
+            "Review the candidate products and manually approve the relevant ASINs."
         )
 
         return "\n".join(lines)
@@ -131,66 +128,15 @@ class GroundTruthFormatter:
         )
 
         return [
-            f"{index})",
-            "",
-            f"ASIN      : {product.asin}",
-            f"Brand     : {product.brand}",
-            f"Price     : {price}",
-            f"Rating    : {rating}",
-            "Title",
-            f"{product.title}",
-            "",
-            "-" * self.LINE_WIDTH,
-            "",
-        ]
-
-    def format_benchmark_template(
-        self,
-        example: GroundTruthExample,
-        candidates: list[CandidateProduct],
-    ) -> str:
-        """
-        Generate a copy-paste benchmark template.
-
-        The generated template already contains all candidate ASINs.
-        During review, simply remove the false positives before
-        adding the example to the benchmark dataset.
-        """
-
-        lines: list[str] = []
-
-        lines.append("=" * self.LINE_WIDTH)
-        lines.append("Copy-Paste Benchmark Template")
-        lines.append("=" * self.LINE_WIDTH)
-        lines.append("")
-
-        lines.append("GroundTruthExample(")
-        lines.append(f'    id="{example.id}",')
-        lines.append(f'    query="{example.query}",')
-        lines.append("")
-
-        lines.append("    relevant_asins=[")
-
-        if candidates:
-            for candidate in candidates:
-                lines.append(f'        "{candidate.asin}",')
-        else:
-            lines.append("        # No candidates found")
-
-        lines.append("    ],")
-        lines.append("")
-        lines.append(
-            f"    category=QueryCategory.{example.category.name},"
-        )
-        lines.append(
-            f'    description="{example.description}",'
-        )
-        lines.append(")")
-        lines.append("")
-
-        lines.append("# Review Checklist")
-        lines.append("# 1. Remove false-positive ASINs.")
-        lines.append("# 2. Verify every remaining ASIN satisfies the query intent.")
-        lines.append("# 3. Save the approved example into benchmark.py.")
-
-        return "\n".join(lines)
+        f"[{index}]",
+        "",
+        f"ASIN   : {product.asin}",
+        f"Brand  : {product.brand}",
+        f"Price  : {price}",
+        f"Rating : {rating}",
+        "Title",
+        product.title,
+        "",
+        "-" * self.LINE_WIDTH,
+        "",
+    ]

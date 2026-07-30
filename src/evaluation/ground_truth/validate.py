@@ -66,10 +66,7 @@ def main() -> None:
 
     expected_categories = {
         QueryCategory.BRAND,
-        QueryCategory.FEATURE,
         QueryCategory.RECOMMENDATION,
-        QueryCategory.PRICE,
-        QueryCategory.RATING,
     }
 
     registered_categories = set(
@@ -88,7 +85,7 @@ def main() -> None:
 
     print()
 
-    print("Running generator smoke tests...")
+    print("Running semantic query validation...")
 
     print()
 
@@ -97,7 +94,7 @@ def main() -> None:
         candidates = builder.build(example)
 
         _check(
-            candidates is not None,
+            isinstance(candidates, list),
             f"{example.id:<30} ({len(candidates)} candidates)",
             f"Generator failed for '{example.id}'.",
         )

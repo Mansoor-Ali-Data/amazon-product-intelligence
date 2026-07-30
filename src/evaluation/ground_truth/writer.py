@@ -8,18 +8,12 @@ from pathlib import Path
 
 
 class GroundTruthWriter:
+    """Writes human-readable candidate reports."""
 
     REPORT_DIR = Path("outputs/ground_truth/reports")
-    TEMPLATE_DIR = Path("outputs/ground_truth/templates")
 
     def __init__(self) -> None:
-
         self.REPORT_DIR.mkdir(
-            parents=True,
-            exist_ok=True,
-        )
-
-        self.TEMPLATE_DIR.mkdir(
             parents=True,
             exist_ok=True,
         )
@@ -34,18 +28,5 @@ class GroundTruthWriter:
 
         path.write_text(
             report,
-            encoding="utf-8",
-        )
-
-    def write_template(
-        self,
-        file_name: str,
-        template: str,
-    ) -> None:
-
-        path = self.TEMPLATE_DIR / f"{file_name}.py"
-
-        path.write_text(
-            template,
             encoding="utf-8",
         )
