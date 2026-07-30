@@ -25,3 +25,21 @@ class RetrievedChunk:
 
     asin: str
     chunk_index: int
+
+
+@dataclass(frozen=True, slots=True)
+class RetrievedProduct:
+    """
+    Represents a unique retrieved product.
+
+    Multiple retrieved chunks belonging to the same product are
+    collapsed into a single RetrievedProduct during evaluation.
+    """
+
+    asin: str
+
+    rank: int
+
+    distance: float
+
+    metadata: dict[str, Any]
