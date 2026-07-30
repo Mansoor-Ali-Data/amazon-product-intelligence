@@ -25,6 +25,10 @@ class RetrievedProduct:
 
     distance: float
 
+    price: float | None
+
+    rating: float | None
+
 
 @dataclass(frozen=True, slots=True)
 class QueryEvaluation:
@@ -58,11 +62,16 @@ class QueryEvaluation:
 @dataclass(frozen=True, slots=True)
 class EvaluationSummary:
     """
-    Aggregated evaluation metrics across all benchmark queries.
+    Aggregated evaluation results across the benchmark dataset.
     """
-    query_results: list[QueryEvaluation]
 
-    total_queries: int
+    semantic_results: list[QueryEvaluation]
+
+    metadata_results: list[MetadataEvaluation]
+
+    total_semantic_queries: int
+
+    total_metadata_queries: int
 
     average_recall_at_k: float
 
@@ -71,6 +80,10 @@ class EvaluationSummary:
     hit_rate: float
 
     mean_reciprocal_rank: float
+
+    average_constraint_accuracy: float
+
+    metadata_pass_rate: float
 
 
 @dataclass(frozen=True, slots=True)

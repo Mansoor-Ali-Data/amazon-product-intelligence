@@ -150,6 +150,8 @@ class SemanticEvaluator:
                     asin=chunk.asin,
                     rank=rank,
                     distance=chunk.distance,
+                    price=chunk.metadata.get("price_value",),
+                    rating=chunk.metadata.get("rating_stars",),
                 )
             )
 

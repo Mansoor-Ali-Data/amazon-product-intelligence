@@ -10,8 +10,10 @@ from __future__ import annotations
 from src.evaluation.benchmark import BENCHMARKS
 from src.evaluation.benchmark_models import BenchmarkQuery
 from src.evaluation.evaluator.models import EvaluationSummary
-from src.evaluation.evaluator.semantic import SemanticEvaluator
+from src.evaluation.evaluator.semantic_evaluation import SemanticEvaluator
+from src.evaluation.evaluator.metadata_evaluation import MetadataEvaluator
 from src.retrieval.retriever import Retriever
+
 
 
 class RetrievalEvaluator:
@@ -25,8 +27,14 @@ class RetrievalEvaluator:
     ) -> None:
 
         self._semantic = SemanticEvaluator(
+        retriever=retriever,
+        )
+
+        self._metadata = MetadataEvaluator(
             retriever=retriever,
         )
+
+    
 
     def evaluate_all(
         self,
@@ -46,7 +54,7 @@ class RetrievalEvaluator:
         # Placeholder until MetadataEvaluator exists.
         _ = metadata_benchmarks
 
-        query_results = [
+        semantic_results = [
             self._semantic.evaluate(
                 benchmark=benchmark,
                 top_k=top_k,
@@ -54,55 +62,98 @@ class RetrievalEvaluator:
             for benchmark in semantic_benchmarks
         ]
 
-        total_queries = len(query_results)
+        metadata_results = [
+            self._metadata.evaluate(
+                benchmark=benchmark,
+                top_k=top_k,
+            )
+            for benchmark in metadata_benchmarks
+        ]
+
+        
+        total_semantic_queries = len(
+            semantic_results
+        )
 
         average_recall = (
             sum(
                 result.recall_at_k
-                for result in query_results
+                for result in semantic_results
             )
-            / total_queries
-            if total_queries
+            / total_semantic_queries
+            if total_semantic_queries
             else 0.0
         )
 
         average_precision = (
             sum(
                 result.precision_at_k
-                for result in query_results
+                for result in semantic_results
             )
-            / total_queries
-            if total_queries
+            / total_semantic_queries
+            if total_semantic_queries
             else 0.0
         )
 
         hit_rate = (
             sum(
                 result.hit_rate
-                for result in query_results
+                for result in semantic_results
             )
-            / total_queries
-            if total_queries
+            / total_semantic_queries
+            if total_semantic_queries
             else 0.0
         )
 
         mean_reciprocal_rank = (
             sum(
                 result.reciprocal_rank
-                for result in query_results
+                for result in semantic_results
             )
-            / total_queries
-            if total_queries
+            / total_semantic_queries
+            if total_semantic_queries
             else 0.0
         )
 
+        total_metadata_queries = len(
+            metadata_results
+        )
+
+        average_constraint_accuracy = (
+            sum(
+                result.constraint_accuracy
+                for result in metadata_results
+            )
+            / total_metadata_queries
+            if total_metadata_queries
+            else 0.0
+        )
+
+        metadata_pass_rate = (
+            sum(
+                result.passed
+                for result in metadata_results
+            )
+            / total_metadata_queries
+            if total_metadata_queries
+            else 0.0
+        )
+
+
         return EvaluationSummary(
-            query_results=query_results,
-            total_queries=total_queries,
+            semantic_results=semantic_results,
+            metadata_results=metadata_results,
+
+            total_semantic_queries=total_semantic_queries,
+            total_metadata_queries=total_metadata_queries,
+
             average_recall_at_k=average_recall,
             average_precision_at_k=average_precision,
             hit_rate=hit_rate,
             mean_reciprocal_rank=mean_reciprocal_rank,
+
+            average_constraint_accuracy=average_constraint_accuracy,
+            metadata_pass_rate=metadata_pass_rate,
         )
 
     @staticmethod
