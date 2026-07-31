@@ -1,8 +1,8 @@
 """
 Data models for BM25 indexing.
 
-These models represent the lexical corpus used to build
-the BM25 search index.
+These models represent the lexical search index used by the
+BM25 retriever.
 """
 
 from __future__ import annotations
@@ -12,29 +12,18 @@ from typing import Any
 
 
 @dataclass(frozen=True, slots=True)
-class BM25Document:
-    """
-    Document stored in the BM25 corpus.
-
-    Each document corresponds to a single chunk used by
-    the retrieval system.
-    """
-
-    chunk_id: str
-
-    text: str
-
-    metadata: dict[str, Any]
-
-
-@dataclass(frozen=True, slots=True)
 class BM25IndexData:
     """
-    Input corpus for building a BM25 index.
+    BM25 lexical index.
 
-    The corpus is built from the same chunks that are
-    indexed into the vector store, ensuring both retrieval
-    systems operate over an identical collection.
+    Stores the information required by the BM25 retriever
+    to perform lexical search over the chunk corpus.
     """
 
-    documents: list[BM25Document]
+    tokenized_documents: list[list[str]]
+
+    documents: list[str]
+
+    chunk_ids: list[str]
+
+    metadatas: list[dict[str, Any]]
