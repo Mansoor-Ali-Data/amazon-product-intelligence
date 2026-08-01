@@ -1,163 +1,180 @@
 """
 Retrieval evaluator.
 
-Coordinates semantic and metadata evaluation across the benchmark
-dataset.
+Coordinates evaluation of multiple retrieval methods.
 """
 
 from __future__ import annotations
 
 from src.evaluation.benchmark import BENCHMARKS
 from src.evaluation.benchmark_models import BenchmarkQuery
-from src.evaluation.evaluator.models import EvaluationSummary
-from src.evaluation.evaluator.semantic_evaluation import SemanticEvaluator
 from src.evaluation.evaluator.metadata_evaluation import MetadataEvaluator
-from src.retrieval.retriever import Retriever
-
+from src.evaluation.evaluator.models import (
+    EvaluationSummary,
+    RetrievalMethodSummary,
+)
+from src.evaluation.evaluator.semantic_evaluation import SemanticEvaluator
 
 
 class RetrievalEvaluator:
     """
-    Coordinates retrieval evaluation.
+    Coordinates evaluation across multiple retrieval methods.
     """
 
     def __init__(
         self,
-        retriever: Retriever,
+        semantic_evaluators: list[SemanticEvaluator],
+        metadata_evaluators: list[MetadataEvaluator],
     ) -> None:
 
-        self._semantic = SemanticEvaluator(
-        retriever=retriever,
-        )
+        if len(semantic_evaluators) != len(metadata_evaluators):
+            raise ValueError(
+                "Semantic and metadata evaluators must have the same length."
+            )
 
-        self._metadata = MetadataEvaluator(
-            retriever=retriever,
-        )
-
-    
+        self._semantic_evaluators = semantic_evaluators
+        self._metadata_evaluators = metadata_evaluators
 
     def evaluate_all(
         self,
         top_k: int = 5,
     ) -> EvaluationSummary:
         """
-        Evaluate all semantic benchmarks.
-
-        Metadata benchmarks will be evaluated by a dedicated
-        MetadataEvaluator in a later step.
+        Evaluate every retrieval method.
         """
 
         semantic_benchmarks = self._semantic_benchmarks()
-
         metadata_benchmarks = self._metadata_benchmarks()
 
-        # Placeholder until MetadataEvaluator exists.
-        _ = metadata_benchmarks
+        retrieval_methods: list[
+            RetrievalMethodSummary
+        ] = []
 
-        semantic_results = [
-            self._semantic.evaluate(
-                benchmark=benchmark,
-                top_k=top_k,
+        for semantic_evaluator, metadata_evaluator in zip(
+            self._semantic_evaluators,
+            self._metadata_evaluators,
+            strict=True,
+        ):
+
+            semantic_results = [
+                semantic_evaluator.evaluate(
+                    benchmark=benchmark,
+                    top_k=top_k,
+                )
+                for benchmark in semantic_benchmarks
+            ]
+
+            metadata_results = [
+                metadata_evaluator.evaluate(
+                    benchmark=benchmark,
+                    top_k=top_k,
+                )
+                for benchmark in metadata_benchmarks
+            ]
+
+            retrieval_methods.append(
+                self._build_summary(
+                    semantic_evaluator=semantic_evaluator,
+                    semantic_results=semantic_results,
+                    metadata_results=metadata_results,
+                )
             )
-            for benchmark in semantic_benchmarks
-        ]
-
-        metadata_results = [
-            self._metadata.evaluate(
-                benchmark=benchmark,
-                top_k=top_k,
-            )
-            for benchmark in metadata_benchmarks
-        ]
-
-        
-        total_semantic_queries = len(
-            semantic_results
-        )
-
-        average_recall = (
-            sum(
-                result.recall_at_k
-                for result in semantic_results
-            )
-            / total_semantic_queries
-            if total_semantic_queries
-            else 0.0
-        )
-
-        average_precision = (
-            sum(
-                result.precision_at_k
-                for result in semantic_results
-            )
-            / total_semantic_queries
-            if total_semantic_queries
-            else 0.0
-        )
-
-        hit_rate = (
-            sum(
-                result.hit_rate
-                for result in semantic_results
-            )
-            / total_semantic_queries
-            if total_semantic_queries
-            else 0.0
-        )
-
-        mean_reciprocal_rank = (
-            sum(
-                result.reciprocal_rank
-                for result in semantic_results
-            )
-            / total_semantic_queries
-            if total_semantic_queries
-            else 0.0
-        )
-
-        total_metadata_queries = len(
-            metadata_results
-        )
-
-        average_constraint_accuracy = (
-            sum(
-                result.constraint_accuracy
-                for result in metadata_results
-            )
-            / total_metadata_queries
-            if total_metadata_queries
-            else 0.0
-        )
-
-        metadata_pass_rate = (
-            sum(
-                result.passed
-                for result in metadata_results
-            )
-            / total_metadata_queries
-            if total_metadata_queries
-            else 0.0
-        )
-
 
         return EvaluationSummary(
-            semantic_results=semantic_results,
-            metadata_results=metadata_results,
-
-            total_semantic_queries=total_semantic_queries,
-            total_metadata_queries=total_metadata_queries,
-
-            average_recall_at_k=average_recall,
-            average_precision_at_k=average_precision,
-            hit_rate=hit_rate,
-            mean_reciprocal_rank=mean_reciprocal_rank,
-
-            average_constraint_accuracy=average_constraint_accuracy,
-            metadata_pass_rate=metadata_pass_rate,
+            retrieval_methods=retrieval_methods,
         )
 
     @staticmethod
-    def _semantic_benchmarks() -> list[BenchmarkQuery]:
+    def _build_summary(
+        semantic_evaluator: SemanticEvaluator,
+        semantic_results,
+        metadata_results,
+    ) -> RetrievalMethodSummary:
+        """
+        Build one retrieval-method summary.
+        """
+
+        total_semantic = len(
+            semantic_results
+        )
+
+        total_metadata = len(
+            metadata_results
+        )
+
+        return RetrievalMethodSummary(
+            retrieval_method=semantic_evaluator.retrieval_method,
+
+            semantic_results=semantic_results,
+            metadata_results=metadata_results,
+
+            total_semantic_queries=total_semantic,
+            total_metadata_queries=total_metadata,
+
+            average_recall_at_k=(
+                sum(
+                    r.recall_at_k
+                    for r in semantic_results
+                )
+                / total_semantic
+                if total_semantic
+                else 0.0
+            ),
+
+            average_precision_at_k=(
+                sum(
+                    r.precision_at_k
+                    for r in semantic_results
+                )
+                / total_semantic
+                if total_semantic
+                else 0.0
+            ),
+
+            hit_rate=(
+                sum(
+                    r.hit_rate
+                    for r in semantic_results
+                )
+                / total_semantic
+                if total_semantic
+                else 0.0
+            ),
+
+            mean_reciprocal_rank=(
+                sum(
+                    r.reciprocal_rank
+                    for r in semantic_results
+                )
+                / total_semantic
+                if total_semantic
+                else 0.0
+            ),
+
+            average_constraint_accuracy=(
+                sum(
+                    r.constraint_accuracy
+                    for r in metadata_results
+                )
+                / total_metadata
+                if total_metadata
+                else 0.0
+            ),
+
+            metadata_pass_rate=(
+                sum(
+                    r.passed
+                    for r in metadata_results
+                )
+                / total_metadata
+                if total_metadata
+                else 0.0
+            ),
+        )
+
+    @staticmethod
+    def _semantic_benchmarks(
+    ) -> list[BenchmarkQuery]:
         """
         Return semantic retrieval benchmarks.
         """
@@ -169,9 +186,10 @@ class RetrievalEvaluator:
         ]
 
     @staticmethod
-    def _metadata_benchmarks() -> list[BenchmarkQuery]:
+    def _metadata_benchmarks(
+    ) -> list[BenchmarkQuery]:
         """
-        Return metadata filter benchmarks.
+        Return metadata retrieval benchmarks.
         """
 
         return [
