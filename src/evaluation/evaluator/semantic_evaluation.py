@@ -1,8 +1,7 @@
 """
 Semantic retrieval evaluator.
 
-Evaluates semantic retrieval benchmarks using ASIN-based
-ground truth.
+Evaluates retrieval quality for any retrieval implementation.
 """
 
 from __future__ import annotations
@@ -18,21 +17,35 @@ from src.evaluation.evaluator.models import (
     QueryEvaluation,
     RetrievedProduct,
 )
-from src.retrieval.models import RetrievedChunk
+from src.retrieval.models import (
+    RetrievedChunk,
+)
 from src.retrieval.retriever import Retriever
 
 
 class SemanticEvaluator:
     """
-    Evaluates semantic retrieval benchmarks.
+    Evaluates semantic retrieval quality for a retrieval method.
     """
 
     def __init__(
         self,
-        retriever: Retriever,
+        retriever,
+        retrieval_method: str,
     ) -> None:
+        """
+        Initialize the evaluator.
+
+        Args:
+            retriever:
+                Any retriever implementing retrieve().
+
+            retrieval_method:
+                Display name used in reports.
+        """
 
         self._retriever = retriever
+        self._retrieval_method = retrieval_method
 
     def evaluate(
         self,
@@ -40,7 +53,7 @@ class SemanticEvaluator:
         top_k: int = 5,
     ) -> QueryEvaluation:
         """
-        Evaluate one semantic benchmark.
+        Evaluate a semantic benchmark query.
         """
 
         retrieved_products = self._retrieve_products(
@@ -57,9 +70,13 @@ class SemanticEvaluator:
             benchmark.relevant_asins or []
         )
 
-        expected_count = len(expected_asins)
+        expected_count = len(
+            expected_asins
+        )
 
-        retrieved_count = len(retrieved_asins)
+        retrieved_count = len(
+            retrieved_asins
+        )
 
         relevant_retrieved = len(
             expected_asins.intersection(
@@ -91,10 +108,13 @@ class SemanticEvaluator:
             query_id=benchmark.query_id,
             query=benchmark.query,
             category=benchmark.category,
+
             retrieved_products=retrieved_products,
+
             expected_count=expected_count,
             retrieved_count=retrieved_count,
             relevant_retrieved=relevant_retrieved,
+
             recall_at_k=recall,
             precision_at_k=precision,
             hit_rate=hit_rate,
@@ -124,10 +144,11 @@ class SemanticEvaluator:
         chunks: list[RetrievedChunk],
     ) -> list[RetrievedProduct]:
         """
-        Keep only the highest-ranked chunk for each product.
+        Convert retrieved chunks into unique retrieved products.
         """
 
         unique_chunks: list[RetrievedChunk] = []
+
         seen_asins: set[str] = set()
 
         for chunk in chunks:
@@ -135,8 +156,13 @@ class SemanticEvaluator:
             if chunk.asin in seen_asins:
                 continue
 
-            seen_asins.add(chunk.asin)
-            unique_chunks.append(chunk)
+            seen_asins.add(
+                chunk.asin,
+            )
+
+            unique_chunks.append(
+                chunk,
+            )
 
         products: list[RetrievedProduct] = []
 
@@ -145,13 +171,19 @@ class SemanticEvaluator:
             start=1,
         ):
 
+            metadata = chunk.metadata
+
             products.append(
                 RetrievedProduct(
                     asin=chunk.asin,
                     rank=rank,
                     distance=chunk.distance,
-                    price=chunk.metadata.get("price_value",),
-                    rating=chunk.metadata.get("rating_stars",),
+                    price=metadata.get(
+                        "price_value",
+                    ),
+                    rating=metadata.get(
+                        "rating_stars",
+                    ),
                 )
             )
 
