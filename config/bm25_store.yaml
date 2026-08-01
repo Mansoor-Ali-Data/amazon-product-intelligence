@@ -1,0 +1,3 @@
+bm25_store:
+  persist_directory: artifacts/bm25
+  file_name: bm25_index.pkl
