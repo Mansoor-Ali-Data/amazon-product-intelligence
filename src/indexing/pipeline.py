@@ -4,7 +4,7 @@ from importlib.resources import path
 Offline indexing pipeline.
 
 Coordinates the complete document indexing workflow from processed datasets
-to vector database storage.
+to vector database storage and BM25 Artiifact storage.
 """
 
 
@@ -127,8 +127,7 @@ def run_indexing_pipeline() -> None:
         )
 
         logger.info(
-            "BM25 lexical store persisted to '%s'.",
-            path,
+            "BM25 lexical store persisted to artifacts/.",
         )
 
         logger.info("Offline indexing pipeline completed successfully.")
