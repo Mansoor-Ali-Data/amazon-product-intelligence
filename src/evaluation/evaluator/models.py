@@ -13,10 +13,15 @@ from dataclasses import dataclass
 from src.evaluation.enums import QueryCategory
 
 
+# ----------------------------------------------------------------------
+# Retrieved Products
+# ----------------------------------------------------------------------
+
+
 @dataclass(frozen=True, slots=True)
 class RetrievedProduct:
     """
-    Product returned by the retriever.
+    Product returned by a retriever.
     """
 
     asin: str
@@ -30,10 +35,15 @@ class RetrievedProduct:
     rating: float | None
 
 
+# ----------------------------------------------------------------------
+# Semantic Evaluation
+# ----------------------------------------------------------------------
+
+
 @dataclass(frozen=True, slots=True)
 class QueryEvaluation:
     """
-    Evaluation result for a single benchmark query.
+    Evaluation result for a single semantic benchmark query.
     """
 
     query_id: str
@@ -59,11 +69,54 @@ class QueryEvaluation:
     reciprocal_rank: float
 
 
+# ----------------------------------------------------------------------
+# Metadata Evaluation
+# ----------------------------------------------------------------------
+
+
 @dataclass(frozen=True, slots=True)
-class EvaluationSummary:
+class MetadataEvaluation:
     """
-    Aggregated evaluation results across the benchmark dataset.
+    Evaluation result for a single metadata benchmark query.
     """
+
+    query_id: str
+
+    query: str
+
+    category: QueryCategory
+
+    retrieved_products: list[RetrievedProduct]
+
+    checked_products: int
+
+    matching_products: int
+
+    violations: int
+
+    constraint_accuracy: float
+
+    passed: bool
+
+
+# ----------------------------------------------------------------------
+# Retrieval Method Summary
+# ----------------------------------------------------------------------
+
+
+@dataclass(frozen=True, slots=True)
+class RetrievalMethodSummary:
+    """
+    Aggregated evaluation results for one retrieval method.
+
+    Examples
+    --------
+    - Dense
+    - BM25
+    - Hybrid
+    """
+
+    retrieval_method: str
 
     semantic_results: list[QueryEvaluation]
 
@@ -86,26 +139,15 @@ class EvaluationSummary:
     metadata_pass_rate: float
 
 
+# ----------------------------------------------------------------------
+# Overall Evaluation Summary
+# ----------------------------------------------------------------------
+
+
 @dataclass(frozen=True, slots=True)
-class MetadataEvaluation:
+class EvaluationSummary:
     """
-    Evaluation result for one metadata benchmark.
+    Comparison of multiple retrieval methods.
     """
 
-    query_id: str
-
-    query: str
-
-    category: QueryCategory
-
-    retrieved_products: list[RetrievedProduct]
-
-    checked_products: int
-
-    matching_products: int
-
-    violations: int
-
-    constraint_accuracy: float
-
-    passed: bool
+    retrieval_methods: list[RetrievalMethodSummary]
