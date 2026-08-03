@@ -21,6 +21,24 @@ from config.loader import load_yaml
 
 
 @dataclass(frozen=True, slots=True)
+class RateLimitConfig:
+    """
+    LLM API rate limit configuration.
+    """
+
+    requests_per_minute: int
+
+@dataclass(frozen=True, slots=True)
+class LLMPricing:
+    """
+    Token pricing configuration.
+    """
+
+    input_per_million_tokens: float
+
+    output_per_million_tokens: float
+
+@dataclass(frozen=True, slots=True)
 class LLMConfig:
     """
     Configuration required to initialize the LLM client.
@@ -31,6 +49,8 @@ class LLMConfig:
     api_key: str
     temperature: float
     max_output_tokens: int
+    pricing: LLMPricing
+    rate_limit: RateLimitConfig
 
 
 def load_llm_config() -> LLMConfig:
@@ -74,4 +94,19 @@ def load_llm_config() -> LLMConfig:
         api_key=api_key,
         temperature=config["temperature"],
         max_output_tokens=config["max_output_tokens"],
+
+        pricing=LLMPricing(
+            input_per_million_tokens=config["pricing"][
+                "input_per_million_tokens"
+            ],
+            output_per_million_tokens=config["pricing"][
+                "output_per_million_tokens"
+            ],
+        ),
+
+        rate_limit=RateLimitConfig(
+            requests_per_minute=config["rate_limit"][
+                "requests_per_minute"
+            ],
+        ),
     )

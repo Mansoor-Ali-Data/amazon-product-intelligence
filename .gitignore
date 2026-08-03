@@ -1,10 +1,29 @@
-data/
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
 
+# Virtual Environment
+.venv/
+
+# Environment Variables
 .env
 
+# Logs
+logs/
 
-.venv
+# Outputs
+outputs/
+
+# ChromaDB
+data/chroma/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Windows ADS
+*:Zone.Identifier
 
 .vscode
-
-logs/

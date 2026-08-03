@@ -6,7 +6,7 @@ from __future__ import annotations
 
 import streamlit as st
 
-from ui.components.answer import render_answer
+
 from ui.components.chat import (
     get_user_query,
     initialize_chat,
@@ -14,9 +14,12 @@ from ui.components.chat import (
 )
 from ui.components.header import render_header
 from ui.components.sidebar import render_sidebar
-from ui.components.sources import render_sources
+
 
 from src.pipeline.rag_pipeline import RAGPipeline
+from ui.components.answer import render_answer
+from ui.components.sources import render_sources
+
 
 
 # ---------------------------------------------------------------------
@@ -56,7 +59,6 @@ selected_question = None
 if not st.session_state.messages:
     selected_question = render_header()
 
-render_sidebar()
 
 
 render_messages()
@@ -70,9 +72,16 @@ query = query or selected_question
 # User Interaction
 # ---------------------------------------------------------------------
 
+# ---------------------------------------------------------------------
+# User Interaction
+# ---------------------------------------------------------------------
+
 if query:
 
-    # Display user message immediately
+    # --------------------------------------------------------------
+    # Store user message
+    # --------------------------------------------------------------
+
     st.session_state.messages.append(
         {
             "role": "user",
@@ -80,10 +89,14 @@ if query:
         }
     )
 
+    # Display user message immediately
     with st.chat_message("user"):
         st.markdown(query)
 
+    # --------------------------------------------------------------
     # Generate assistant response
+    # --------------------------------------------------------------
+
     with st.chat_message("assistant"):
 
         with st.status(
@@ -102,16 +115,29 @@ if query:
                 expanded=False,
             )
 
-        render_answer(response.answer)
+        # Render current response
+        render_answer(
+            response.llm_response.text,
+        )
 
         render_sources(
             response.retrieved_chunks,
         )
 
-    # Store assistant response
+    
+
+    # --------------------------------------------------------------
+    # Persist assistant message
+    # --------------------------------------------------------------
+
     st.session_state.messages.append(
         {
             "role": "assistant",
-            "content": response.answer,
+            "content": response.llm_response.text,
+            "query": query,
+            "sources": response.retrieved_chunks,
         }
     )
+
+
+render_sidebar()

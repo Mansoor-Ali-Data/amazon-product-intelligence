@@ -1,35 +1,39 @@
 """
-Utilities for formatting LLM prompts.
-
-This module is responsible only for converting the user query
-and retrieved context into a complete prompt using predefined
-templates.
-
-It performs no retrieval, context construction, or LLM inference.
+Prompt formatting utilities.
 """
 
-from .templates import PROMPT_TEMPLATE
+from __future__ import annotations
+
+from src.evaluation.llm.prompt_strategy import PromptStrategy
+
+from .templates import PROMPT_TEMPLATES
 
 
 def format_prompt(
     query: str,
     context: str,
+    strategy: PromptStrategy = PromptStrategy.BASELINE,
 ) -> str:
     """
-    Format a complete LLM prompt.
+    Format an LLM prompt.
 
     Args:
         query:
             User question.
 
         context:
-            Retrieved context produced by the Context Builder.
+            Retrieved context.
+
+        strategy:
+            Prompt strategy to use.
 
     Returns:
-        Complete prompt ready for LLM inference.
+        Formatted prompt.
     """
 
-    return PROMPT_TEMPLATE.substitute(
+    template = PROMPT_TEMPLATES[strategy]
+
+    return template.substitute(
         query=query,
         context=context,
     )

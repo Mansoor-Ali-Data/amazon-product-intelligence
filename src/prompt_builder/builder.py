@@ -8,6 +8,10 @@ This module performs no retrieval, context construction,
 or model inference.
 """
 
+from __future__ import annotations
+
+from src.evaluation.llm.prompt_strategy import PromptStrategy
+
 from .formatter import format_prompt
 
 
@@ -20,6 +24,7 @@ class PromptBuilder:
         self,
         query: str,
         context: str,
+        strategy: PromptStrategy = PromptStrategy.BASELINE,
     ) -> str:
         """
         Build an LLM-ready prompt.
@@ -31,6 +36,9 @@ class PromptBuilder:
             context:
                 Retrieved context.
 
+            strategy:
+                Prompt strategy to use.
+
         Returns:
             Prompt string.
         """
@@ -38,4 +46,5 @@ class PromptBuilder:
         return format_prompt(
             query=query,
             context=context,
+            strategy=strategy,
         )

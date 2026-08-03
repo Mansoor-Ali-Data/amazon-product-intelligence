@@ -1,9 +1,12 @@
 """
-Data models for the finalized retrieval benchmark.
+Data models for the finalized RAG benchmark.
 
-Unlike the GroundTruthExample used during candidate generation,
-these models represent the final, human-approved benchmark used
-by the retrieval evaluator.
+These models represent the final, human-approved benchmark used
+to evaluate the complete RAG pipeline.
+
+The same benchmark is shared by:
+- Retrieval evaluation
+- LLM generation evaluation
 """
 
 from __future__ import annotations
@@ -14,9 +17,11 @@ from typing import Optional
 from src.evaluation.enums import QueryCategory
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, slots=True)
 class ExpectedFilter:
-    """Expected metadata constraints for filter-based retrieval benchmarks."""
+    """
+    Expected metadata constraints for filter-based retrieval benchmarks.
+    """
 
     min_price: Optional[float] = None
     max_price: Optional[float] = None
@@ -25,16 +30,39 @@ class ExpectedFilter:
     max_rating: Optional[float] = None
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, slots=True)
 class BenchmarkQuery:
-    """Single retrieval benchmark."""
+    """
+    Single benchmark query used to evaluate the RAG system.
+
+    The retrieval evaluator uses:
+    - relevant_asins
+    - expected_filter
+
+    The LLM evaluator uses:
+    - ground_truth_answer
+    """
+
+    # ------------------------------------------------------------------
+    # Query information
+    # ------------------------------------------------------------------
 
     query_id: str
+
     category: QueryCategory
+
     query: str
 
-    # Semantic retrieval benchmark
+    # ------------------------------------------------------------------
+    # Retrieval benchmark
+    # ------------------------------------------------------------------
+
     relevant_asins: Optional[list[str]] = None
 
-    # Metadata retrieval benchmark
     expected_filter: Optional[ExpectedFilter] = None
+
+    # ------------------------------------------------------------------
+    # LLM benchmark
+    # ------------------------------------------------------------------
+
+    ground_truth_answer: Optional[str] = None

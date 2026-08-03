@@ -12,6 +12,8 @@ from __future__ import annotations
 import streamlit as st
 
 
+
+
 def initialize_chat() -> None:
     """
     Initialize the conversation history.
@@ -23,13 +25,16 @@ def initialize_chat() -> None:
 
 def render_messages() -> None:
     """
-    Render the conversation history.
+    Render conversation history.
     """
 
     for message in st.session_state.messages:
 
         with st.chat_message(message["role"]):
-            st.markdown(message["content"])
+
+            st.markdown(
+                message["content"],
+            )
 
 
 def get_user_query() -> str | None:

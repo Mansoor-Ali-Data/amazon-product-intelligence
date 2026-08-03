@@ -65,8 +65,20 @@ BENCHMARKS: list[BenchmarkQuery] = [
                 "B0DR8Q5186",
                 "B0DSDL34G4",
                 "B0DMSVLHJ1",
+
         ],
+
+        ground_truth_answer=(
+            "Recommend golf polo shirts that are designed for "
+            "performance, comfort, and outdoor activities. "
+            "Suitable products should emphasize breathable or "
+            "moisture-wicking fabrics, lightweight construction, "
+            "and good customer satisfaction through high ratings "
+            "and positive reviews."
+            ),        
     ),
+
+        
 
     BenchmarkQuery(
         query_id="recommend_performance",
@@ -90,6 +102,16 @@ BENCHMARKS: list[BenchmarkQuery] = [
             "B0BGJ5XZTQ",
             "B0DSFZP271",
         ],
+
+        ground_truth_answer=(
+            "Recommend polo shirts intended for athletic or "
+            "performance use. Suitable recommendations should "
+            "highlight moisture-wicking materials, breathability, "
+            "lightweight comfort, and functionality during sports "
+            "or outdoor activities. Products should preferably "
+            "have strong customer ratings and review counts."
+        ),
+
     ),
 
     BenchmarkQuery(
@@ -112,6 +134,15 @@ BENCHMARKS: list[BenchmarkQuery] = [
             "B083W4JW26",
             "B0DMSVLHJ1",
         ],
+
+        ground_truth_answer=(
+            "Recommend polo shirts manufactured by COOFANDY. "
+            "The answer should recommend only COOFANDY products "
+            "that match the user's request and may highlight "
+            "features such as comfort, style, fit, material, "
+            "or customer ratings where supported by the "
+            "retrieved product information."
+        ),
     ),
 
     BenchmarkQuery(
@@ -130,6 +161,14 @@ BENCHMARKS: list[BenchmarkQuery] = [
             "B0BGJ5XZTQ",
             "B0DR8Q5186",
         ],
+
+        ground_truth_answer=(
+            "Recommend polo shirts manufactured by ZITY. "
+            "The answer should recommend only ZITY products "
+            "and may summarize important product features, "
+            "materials, customer ratings, or performance "
+            "characteristics supported by the retrieved context."
+        ),
     ),
 
     # ==========================================================
@@ -143,6 +182,13 @@ BENCHMARKS: list[BenchmarkQuery] = [
         expected_filter=ExpectedFilter(
             max_price=20.0,
         ),
+
+        ground_truth_answer=(
+            "Return only products priced below $20. "
+            "Do not include products priced above the requested limit. "
+            "If multiple qualifying products exist, present them clearly "
+            "with their prices."
+        )
     ),
 
     BenchmarkQuery(
@@ -152,6 +198,12 @@ BENCHMARKS: list[BenchmarkQuery] = [
         expected_filter=ExpectedFilter(
             max_price=30.0,
         ),
+
+        ground_truth_answer=(
+            "Return only products priced below $30. "
+            "Every recommended product must satisfy the requested "
+            "price constraint and should include its price."
+        )
     ),
 
     BenchmarkQuery(
@@ -161,5 +213,11 @@ BENCHMARKS: list[BenchmarkQuery] = [
         expected_filter=ExpectedFilter(
             min_rating=4.5,
         ),
+
+        ground_truth_answer=(
+            "Return only products with customer ratings of at least "
+            "4.5 stars. The response should not recommend products "
+            "below the requested rating threshold."
+        )
     ),
 ]
