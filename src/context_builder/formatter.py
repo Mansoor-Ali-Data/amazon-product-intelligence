@@ -10,6 +10,7 @@ construction.
 
 from src.retrieval.models import RetrievedChunk
 from .templates import CONTEXT_TEMPLATE
+import math
 
 # ---------------------------------------------------------------------
 # Public API
@@ -27,19 +28,28 @@ def format_context(
         brand=chunk.metadata.get("brand_name", "Not specified"),
         category=chunk.metadata.get("breadcrumbs", "Not specified"),
         price=(
-            f"${price:.2f}" 
-            if isinstance((price := chunk.metadata.get("price_value")), (int, float)) 
+            f"${price:.2f}"
+            if (
+                isinstance((price := chunk.metadata.get("price_value")), (int, float))
+                and not math.isnan(price)
+            )
             else "Not specified"
         ),
         list_price=chunk.metadata.get("list_price", "Not specified"),
         rating=(
             f"{rating:.1f} / 5"
-            if isinstance((rating := chunk.metadata.get("rating_stars")), (int, float))
+            if (
+                isinstance((rating := chunk.metadata.get("rating_stars")), (int, float))
+                and not math.isnan(rating)
+            )
             else "Not specified"
         ),
         rating_count=(
             f"{int(rating_count)} ratings"
-            if isinstance((rating_count := chunk.metadata.get("rating_count")), (int, float))
+            if (
+                isinstance((rating_count := chunk.metadata.get("rating_count")), (int, float))
+                and not math.isnan(rating_count)
+            )
             else "Not specified"
         ),
         availability=chunk.metadata.get("availability", "Not specified"),
