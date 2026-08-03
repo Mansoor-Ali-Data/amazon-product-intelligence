@@ -1,7 +1,7 @@
 """
 Reporting utilities for retrieval evaluation.
 
-Formats semantic and metadata evaluation results into a
+Formats retrieval evaluation results into a
 human-readable report.
 """
 
@@ -11,6 +11,7 @@ from src.evaluation.evaluator.models import (
     EvaluationSummary,
     MetadataEvaluation,
     QueryEvaluation,
+    RetrievalMethodSummary,
 )
 
 
@@ -36,9 +37,49 @@ class EvaluationReporter:
         lines.append("=" * self.LINE_WIDTH)
         lines.append("")
 
-        # ---------------------------------------------------------
-        # Semantic Evaluation
-        # ---------------------------------------------------------
+        for method in summary.retrieval_methods:
+
+            lines.extend(
+                self._method_report(
+                    method,
+                )
+            )
+
+            lines.append("")
+
+        lines.extend(
+            self._comparison(
+                summary,
+            )
+        )
+
+        lines.append("")
+
+        lines.extend(
+            self._selected_retriever(
+                summary,
+            )
+        )
+
+        return "\n".join(lines)
+
+    
+    def _method_report(
+        self,
+        summary: RetrievalMethodSummary,
+    ) -> list[str]:
+        """
+        Format one retrieval method report.
+        """
+
+        lines: list[str] = []
+
+        lines.append("=" * self.LINE_WIDTH)
+        lines.append(
+            f"{summary.retrieval_method} Retrieval"
+        )
+        lines.append("=" * self.LINE_WIDTH)
+        lines.append("")
 
         lines.extend(
             self._semantic_summary(
@@ -59,10 +100,6 @@ class EvaluationReporter:
                     result,
                 )
             )
-
-        # ---------------------------------------------------------
-        # Metadata Evaluation
-        # ---------------------------------------------------------
 
         lines.append("")
         lines.append("=" * self.LINE_WIDTH)
@@ -90,11 +127,12 @@ class EvaluationReporter:
                 )
             )
 
-        return "\n".join(lines)
+        return lines
+
 
     def _semantic_summary(
         self,
-        summary: EvaluationSummary,
+        summary: RetrievalMethodSummary,
     ) -> list[str]:
         """
         Format semantic evaluation summary.
@@ -103,16 +141,32 @@ class EvaluationReporter:
         return [
             "Semantic Evaluation",
             "-" * self.LINE_WIDTH,
-            f"Queries                  : {summary.total_semantic_queries}",
-            f"Average Precision@K      : {summary.average_precision_at_k:.3f}",
-            f"Average Recall@K         : {summary.average_recall_at_k:.3f}",
-            f"Average Hit Rate         : {summary.hit_rate:.3f}",
-            f"Mean Reciprocal Rank     : {summary.mean_reciprocal_rank:.3f}",
+            (
+                f"Queries                  : "
+                f"{summary.total_semantic_queries}"
+            ),
+            (
+                f"Average Precision@K      : "
+                f"{summary.average_precision_at_k:.3f}"
+            ),
+            (
+                f"Average Recall@K         : "
+                f"{summary.average_recall_at_k:.3f}"
+            ),
+            (
+                f"Average Hit Rate         : "
+                f"{summary.hit_rate:.3f}"
+            ),
+            (
+                f"Mean Reciprocal Rank     : "
+                f"{summary.mean_reciprocal_rank:.3f}"
+            ),
         ]
+    
 
     def _metadata_summary(
         self,
-        summary: EvaluationSummary,
+        summary: RetrievalMethodSummary,
     ) -> list[str]:
         """
         Format metadata evaluation summary.
@@ -121,11 +175,18 @@ class EvaluationReporter:
         return [
             "Metadata Evaluation",
             "-" * self.LINE_WIDTH,
-            f"Queries                  : {summary.total_metadata_queries}",
-            f"Average Constraint Accuracy : "
-            f"{summary.average_constraint_accuracy:.3f}",
-            f"Metadata Pass Rate          : "
-            f"{summary.metadata_pass_rate:.3f}",
+            (
+                f"Queries                     : "
+                f"{summary.total_metadata_queries}"
+            ),
+            (
+                f"Average Constraint Accuracy : "
+                f"{summary.average_constraint_accuracy:.3f}"
+            ),
+            (
+                f"Metadata Pass Rate          : "
+                f"{summary.metadata_pass_rate:.3f}"
+            ),
         ]
 
     def _semantic_query(
@@ -258,3 +319,62 @@ class EvaluationReporter:
         lines.append("")
 
         return lines
+
+
+    def _comparison(
+        self,
+        summary: EvaluationSummary,
+    ) -> list[str]:
+        """
+        Format retrieval method comparison.
+        """
+
+        lines: list[str] = []
+
+        lines.append("=" * self.LINE_WIDTH)
+        lines.append("Retriever Comparison")
+        lines.append("=" * self.LINE_WIDTH)
+        lines.append("")
+
+        lines.append(
+            f"{'Method':<12}"
+            f"{'Precision':>12}"
+            f"{'Recall':>10}"
+            f"{'Hit Rate':>12}"
+            f"{'MRR':>10}"
+            f"{'Metadata':>14}"
+        )
+
+        lines.append("-" * self.LINE_WIDTH)
+
+        for method in summary.retrieval_methods:
+
+            lines.append(
+                f"{method.retrieval_method:<12}"
+                f"{method.average_precision_at_k:>12.3f}"
+                f"{method.average_recall_at_k:>10.3f}"
+                f"{method.hit_rate:>12.3f}"
+                f"{method.mean_reciprocal_rank:>10.3f}"
+                f"{method.average_constraint_accuracy:>14.3f}"
+            )
+
+        return lines
+
+    def _selected_retriever(
+        self,
+        summary: EvaluationSummary,
+    ) -> list[str]:
+        """
+        Format selected retriever section.
+        """
+
+        return [
+            "=" * self.LINE_WIDTH,
+            "Selected Retriever",
+            "=" * self.LINE_WIDTH,
+            "",
+            summary.selected_retriever,
+            "",
+            "Reason:",
+            summary.selection_reason,
+        ]

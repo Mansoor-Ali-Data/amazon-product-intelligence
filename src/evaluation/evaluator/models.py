@@ -151,3 +151,7 @@ class EvaluationSummary:
     """
 
     retrieval_methods: list[RetrievalMethodSummary]
+
+    selected_retriever: str
+
+    selection_reason: str

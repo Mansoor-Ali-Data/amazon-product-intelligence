@@ -39,6 +39,16 @@ class MetadataEvaluator:
         self._retriever = retriever
         self._retrieval_method = retrieval_method
 
+    @property
+    def retrieval_method(
+        self,
+    ) -> str:
+        """
+        Name of the retrieval method being evaluated.
+        """
+
+        return self._retrieval_method
+
     def evaluate(
         self,
         benchmark: BenchmarkQuery,

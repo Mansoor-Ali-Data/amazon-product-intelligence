@@ -80,8 +80,16 @@ class RetrievalEvaluator:
                 )
             )
 
+        selected_retriever, selection_reason = (
+            self._select_best_retriever(
+                retrieval_methods
+            )
+        )
+
         return EvaluationSummary(
             retrieval_methods=retrieval_methods,
+            selected_retriever=selected_retriever,
+            selection_reason=selection_reason,
         )
 
     @staticmethod
@@ -197,3 +205,50 @@ class RetrievalEvaluator:
             for benchmark in BENCHMARKS
             if benchmark.expected_filter is not None
         ]
+    
+
+    @staticmethod
+    def _select_best_retriever(
+        retrieval_methods: list[RetrievalMethodSummary],
+    ) -> tuple[str, str]:
+        """
+        Select the best retrieval method.
+
+        Selection priority:
+
+        1. Mean Reciprocal Rank
+        2. Metadata Constraint Accuracy
+        3. Hit Rate
+        4. Precision@K
+        """
+
+        winner = max(
+            retrieval_methods,
+            key=lambda method: (
+                0.40 * method.average_precision_at_k
+                + 0.25 * method.average_recall_at_k
+                + 0.20 * method.average_constraint_accuracy
+                + 0.15 * method.mean_reciprocal_rank
+            ),
+        )
+
+        score = (
+            0.40 * winner.average_precision_at_k
+            + 0.25 * winner.average_recall_at_k
+            + 0.20 * winner.average_constraint_accuracy
+            + 0.15 * winner.mean_reciprocal_rank
+        )
+
+        reason = (
+            f"{winner.retrieval_method} achieved the highest overall retrieval "
+            f"score ({score:.3f}) using a weighted evaluation of "
+            f"Precision@K (40%), Recall@K (25%), Metadata Accuracy (20%), "
+            f"and Mean Reciprocal Rank (15%). "
+            f"It provides the strongest balance between semantic relevance, "
+            f"retrieval coverage, and metadata constraint satisfaction."
+        )
+
+        return (
+            winner.retrieval_method,
+            reason,
+        )
