@@ -28,7 +28,7 @@ class CandidateGenerator(ABC):
         products_df: pd.DataFrame,
     ) -> list[CandidateProduct]:
         """
-        Generate candidate products for a benchmark query.
+        Generate candidate products for a query.
         """
 
         matches = self._filter(
