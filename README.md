@@ -27,6 +27,38 @@ The Amazon Fashion Product Intelligence System addresses this challenge by combi
 
 ---
 
+# ✅ Evaluation Criteria Mapping
+
+This project was developed following the LLM Zoomcamp evaluation rubric. The table below maps each evaluation criterion to its implementation in this repository.
+
+| Evaluation Criterion | Score | Repository Location | Description |
+|----------------------|:----:|---------------------|-------------|
+| **Problem Description** | ✅ **2/2** | `README.md` | Clearly defines the business problem and target users (Product Managers, Brand Managers, Category Managers, and E-commerce Analysts). |
+| **Retrieval Flow** | ✅ **2/2** | `src/pipeline/`<br>`src/retrieval/`<br>`src/vector_store/`<br>`src/context_builder/`<br>`src/llm/` | Complete Retrieval-Augmented Generation (RAG) pipeline combining a knowledge base with Google Gemini for grounded answer generation. |
+| **Retrieval Evaluation** | ✅ **2/2** | `src/retrieval/`<br>`src/evaluation/ground_truth/`<br>`src/evaluation/evaluator/` | Evaluates Dense Retrieval, BM25 Retrieval, and Hybrid Retrieval (Reciprocal Rank Fusion), selecting the best-performing approach. |
+| **LLM Evaluation** | ✅ **2/2** | `src/evaluation/llm/` | Compares multiple prompt strategies and evaluates generated answers using an LLM-as-a-Judge evaluation framework. |
+| **Interface** | ✅ **2/2** | `ui/app.py`<br>`ui/components/` | Interactive Streamlit application for natural language querying of Amazon Fashion products. |
+| **Ingestion Pipeline** | ⚠️ **1/2** | `src/scripts/preprocess_data.py`<br>`src/indexing/run.py` | Automated preprocessing and indexing through Python scripts. No orchestration framework (Airflow, Prefect, dlt, etc.) is used. |
+| **Monitoring** | ⚠️ **1/2** | `src/monitoring/`<br>`ui/monitoring.py` | Telemetry collection and interactive monitoring dashboard with multiple visualizations. |
+| **Containerization** | ❌ **0/2** | — | Docker support is not included. |
+| **Reproducibility** | ✅ **2/2** | `README.md`<br>`pyproject.toml`<br>`config/` | Complete setup instructions, dependency management using `uv`, configuration files, and execution commands are provided. |
+
+---
+
+## ⭐ Best Practices
+
+| Best Practice | Status | Repository Location |
+|---------------|:------:|---------------------|
+| Hybrid Search (Dense + BM25 + Reciprocal Rank Fusion) | ✅ | `src/retrieval/` |
+| Document Re-ranking | ❌ | Not Implemented |
+| User Query Rewriting | ❌ | Not Implemented |
+
+---
+
+> **Note:** This table is a self-assessment based on the published LLM Zoomcamp evaluation rubric. Final scoring is determined by the project reviewers.
+
+---
+
 # 🏗️ System Architecture
 
 ![System Architecture](docs/architecture/system-architecture.png)
