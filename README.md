@@ -70,40 +70,43 @@ This project was developed following the LLM Zoomcamp evaluation rubric. The tab
 ```text
 amazon-product-intelligence/
 │
-├── config/                 # Configuration files
+├── config/                 # Application configuration
+│
 ├── data/
-│   ├── raw/
-│   ├── processed/
-│   └── chroma/
+│   ├── raw/                # Original dataset
+│   ├── processed/          # Cleaned dataset
+│   └── chroma/             # Vector database
 │
 ├── docs/
-│   ├── architecture/
-│   └── adr/
+│   ├── architecture/       # System diagrams
+│   └── adr/                # Architecture decisions
 │
 ├── outputs/
-│   ├── evaluation/
-│   ├── monitoring/
-│   └── ground_truth/
+│   ├── evaluation/         # Evaluation reports
+│   ├── monitoring/         # Telemetry logs
+│   └── ground_truth/       # Generated benchmark dataset
 │
 ├── src/
-│   ├── preprocessing/
-│   ├── document_builder/
-│   ├── chunking/
-│   ├── embeddings/
-│   ├── indexing/
-│   ├── retrieval/
-│   ├── context_builder/
-│   ├── prompt_builder/
-│   ├── llm/
-│   ├── pipeline/
-│   ├── monitoring/
-│   └── evaluation/
+│   ├── preprocessing/      # Data cleaning pipeline
+│   ├── document_builder/   # Product document generation
+│   ├── chunking/           # Document chunk creation
+│   ├── embeddings/         # Embedding generation
+│   ├── indexing/           # Knowledge base indexing
+│   ├── retrieval/          # Hybrid retrieval engine
+│   ├── context_builder/    # Context assembly
+│   ├── prompt_builder/     # Prompt construction
+│   ├── llm/                # Gemini integration
+│   ├── pipeline/           # End-to-end RAG workflow
+│   ├── monitoring/         # Telemetry collection
+│   ├── evaluation/         # Retrieval & LLM evaluation
+│   ├── scripts/            # Utility & setup scripts
+│   └── vector_store/       # ChromaDB management
 │
 ├── ui/
-│   ├── app.py
-│   └── monitoring.py
+│   ├── app.py              # Chat application
+│   └── monitoring.py       # Monitoring dashboard
 │
-└── README.md
+└── README.md               # Project documentation
 ```
 
 ---
